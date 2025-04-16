@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quizzy - Inscription</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="top-bar">
+      <div class="logo-container">
+        <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="signup-container">
+    <h1>Create your account</h1>
+    <form class="signup-form" action="/signup" method="POST">
+      <!-- User Type Selection -->
+      <div class="form-group user-type">
+        <label>You are :</label>
+        <div class="type-options">
+          <label class="type-option">
+            <input type="radio" name="user_type" value="student" checked>
+            <div class="option-card">
+              <i class="fas fa-graduation-cap"></i>
+              <span>Student</span>
+            </div>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="user_type" value="teacher">
+            <div class="option-card">
+              <i class="fas fa-chalkboard-teacher"></i>
+              <span>Teacher</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="lastname">Lastname <span class="required">*</span></label>
+        <input type="text" id="lastname" name="lastname" required>
+      </div>
+
+      <div class="form-group">
+        <label for="firstname">Name <span class="required">*</span></label>
+        <input type="text" id="firstname" name="firstname" required>
+      </div>
+
+      <div class="form-group">
+        <label for="birthdate">Birthdate <span class="required">*</span></label>
+        <input type="date" id="birthdate" name="birthdate" required>
+      </div>
+
+      <div class="form-group">
+        <label>Gender <span class="required">*</span></label>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="gender" value="male" required>
+            Male
+          </label>
+          <label>
+            <input type="radio" name="gender" value="female">
+            Female
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="institution">Institution <span class="required">*</span></label>
+        <input type="text" id="institution" name="institution" required>
+      </div>
+
+      <div class="form-group">
+        <label for="field">Field <span class="required">*</span></label>
+        <input type="text" id="field" name="field" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Signup</button>
+    </form>
+
+    <p class="login-link">Already have an account? <a href="/login">Login</a></p>
+  </main>
+</body>
+</html>
