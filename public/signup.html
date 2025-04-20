@@ -84,10 +84,24 @@
         <input type="text" id="field" name="field" required>
       </div>
 
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <input type="password" id="password" name="password" required 
+               pattern=".{8,}" title="8 caractères minimum"
+               class="password-field">
+        <div class="password-strength"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirm-password">Verify your password <span class="required">*</span></label>
+        <input type="password" id="confirm-password" name="confirm_password" required>
+        <div class="password-match"></div>
+      </div>
+
       <button type="submit" class="btn btn-primary">Signup</button>
     </form>
 
-    <p class="login-link">Already have an account? <a href="/login">Login</a></p>
+    <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
   </main>
 </body>
 </html>

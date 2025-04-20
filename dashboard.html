@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h1 id="welcome-message">Welcome, <span id="userName"></span></h1>
+  <p>This is your dashboard. You can now create and manage exams here.</p>
+
+  <button onclick="window.location.href='/create-exam'">Create Exam</button>
+  <button onclick="window.location.href='/take-exam'">Take Exam</button>
+  <button id="logout-btn">Logout</button>
+
+  <script>
+    // Get user info
+    fetch('/api/user')
+      .then(res => {
+        if (!res.ok) throw new Error('Not logged in');
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('welcome-message').textContent = `Welcome, ${data.firstname}`;
+      })
+      .catch(err => {
+        console.error(err);
+        window.location.href = '/login.html';
+      });
+  
+    // Logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        window.location.href = '/logout';
+      });
+    }
+  </script>
+  <button id="logout-btn">Logout</button>
+
+</body>
+</html>
