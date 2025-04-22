@@ -18,11 +18,11 @@ app.use(session({
 }));
 
 // Routes
-app.use('/', require('./quizzy/routes/authRoutes'));
-app.use('/', require('./quizzy/routes/dashboardRoutes'));
+app.use('/', require('./routes/authRoutes'));
+app.use('/', require('./routes/dashboardRoutes'));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'quizzy', 'views', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

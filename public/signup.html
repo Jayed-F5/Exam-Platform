@@ -100,6 +100,20 @@
 
       <button type="submit" class="btn btn-primary">Signup</button>
     </form>
+    <div id="message-box" class="message-box"></div>
+
+    <script>
+      const messageBox = document.getElementById('message-box');
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.has('error')) {
+       messageBox.textContent = decodeURIComponent(params.get('error'));
+       messageBox.style.color = 'red';
+      } else if (params.has('success')) {
+        messageBox.textContent = decodeURIComponent(params.get('success'));
+        messageBox.style.color = 'green';
+      }
+    </script>
 
     <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
   </main>
