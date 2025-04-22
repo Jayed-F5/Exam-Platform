@@ -4,39 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-  <h1 id="welcome-message">Welcome, <span id="userName"></span></h1>
-  <p>This is your dashboard. You can now create and manage exams here.</p>
+<body class="dashboard-page">
+  <header class="header">
+    <div class="top-bar">
+      <div class="logo-container">
+        <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
+      </div>
+      <button class="btn btn-logout" id="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
 
-  <button onclick="window.location.href='/create-exam'">Create Exam</button>
-  <button onclick="window.location.href='/take-exam'">Take Exam</button>
-  <button id="logout-btn">Logout</button>
+  <main class="dashboard-wrapper">
+    <h1 class="welcome-text">Welcome back, <span id="userName" class="username"></span> 👋</h1>
+
+    <div class="dashboard-split">
+      <!-- Left side - Create Exam -->
+      <section class="dashboard-panel">
+        <h2>Create an Exam</h2>
+        <p>You can create a new exam and configure its settings.</p>
+        <button onclick="window.location.href='/create-exam'" class="action-button">
+          <i class="fas fa-plus-circle"></i> Create Exam
+        </button>
+      </section>
+
+      <!-- Right side - Take Exam -->
+      <section class="dashboard-panel">
+        <h2>Take an Exam</h2>
+        <p>Enter your exam link below to begin:</p>
+        <form action="/take-exam" method="GET">
+          <input type="text" name="examCode" placeholder="Enter exam link or code" required class="exam-input"/>
+          <button type="submit" class="action-button">
+            <i class="fas fa-sign-in-alt"></i> Enter
+          </button>
+        </form>
+      </section>
+    </div>
+  </main>
 
   <script>
-    // Get user info
     fetch('/api/user')
-      .then(res => {
-        if (!res.ok) throw new Error('Not logged in');
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        document.getElementById('welcome-message').textContent = `Welcome, ${data.firstname}`;
+        document.getElementById('userName').textContent = data.name;
       })
-      .catch(err => {
-        console.error(err);
-        window.location.href = '/login.html';
-      });
-  
-    // Logout
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        window.location.href = '/logout';
-      });
-    }
-  </script>
-  <button id="logout-btn">Logout</button>
+      .catch(() => window.location.href = '/login.html');
 
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      window.location.href = '/logout';
+    });
+  </script>
 </body>
 </html>

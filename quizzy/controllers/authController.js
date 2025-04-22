@@ -5,7 +5,7 @@ const db = require('../models/db');
 exports.signup = async (req, res) => {
   const {
     email, password, firstname, lastname,
-    birthdate, gender, institution, field, user_type
+    birthdate, gender, institution, field
   } = req.body;
 
   try {
@@ -23,13 +23,13 @@ exports.signup = async (req, res) => {
 
     // Insert new user
     const insertQuery = `
-      INSERT INTO users (email, password, firstname, lastname, birthdate, gender, institution, field, user_type)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO users (email, password, firstname, lastname, birthdate, gender, institution, field)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     await db.promise().query(insertQuery, [
       email, hashedPassword, firstname, lastname,
-      birthdate, gender, institution, field, user_type
+      birthdate, gender, institution, field
     ]);
 
     // Redirect to login with success message
@@ -63,7 +63,6 @@ exports.login = (req, res) => {
         id: user.id,
         firstname: user.firstname,
         email: user.email,
-        user_type: user.user_type
       };
 
       // Redirect to dashboard

@@ -19,26 +19,7 @@
   <main class="login-container">
     <h1>Log in</h1>
     <form class="login-form" action="/login" method="POST">
-      <!-- User Type Selection -->
-      <div class="form-group user-type">
-        <label>You are :</label>
-        <div class="type-options">
-          <label class="type-option">
-            <input type="radio" name="user_type" value="student" checked>
-            <div class="option-card">
-              <i class="fas fa-graduation-cap"></i>
-              <span>Student</span>
-            </div>
-          </label>
-          <label class="type-option">
-            <input type="radio" name="user_type" value="teacher">
-            <div class="option-card">
-              <i class="fas fa-chalkboard-teacher"></i>
-              <span>Teacher</span>
-            </div>
-          </label>
-        </div>
-      </div>
+
 
       <!-- Login Fields -->
       <div class="form-group">
@@ -49,9 +30,6 @@
       <div class="form-group">
         <label for="login-password">Password <span class="required">*</span></label>
         <input type="password" id="login-password" name="password" required>
-        <div class="forgot-password">
-          <a href="/reset-password">forgot your password ?</a>
-        </div>
       </div>
 
       <button type="submit" class="btn-login-submit">Log in</button>
@@ -73,7 +51,7 @@
         </script>
 
 
-    <p class="signup-link">You don't have an account yet ? <a href="/signup">Sign up</a></p>
+    <p class="signup-link">You don't have an account yet ? <a href="signup.html">Sign up</a></p>
   </main>
 </body>
 </html>

@@ -6,23 +6,23 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = 3000;
 
-// Middlewares
+// Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+
 app.use(session({
   secret: 'your_secret_key_here',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
+  cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 } // 1 day
 }));
 
 // Routes
 app.use('/', require('./quizzy/routes/authRoutes'));
-app.use('/', require('./quizzy/routes/dashboardRoutes'));
+app.use('/dashboard', require('./quizzy/routes/dashboardRoutes'));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'quizzy', 'views', 'index.html'));
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
-
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
