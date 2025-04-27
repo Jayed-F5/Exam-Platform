@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Créer un Examen</title>
+  <link rel="stylesheet" href="styleCreateExam.css" />
+</head>
+<body class="create-exam-page">
+
+  <div class="form-container">
+    <img src="logo(1).png" alt="Quizzy Logo" class="quizzy-logo" />
+    <h1 class="form-title">Créer un Examen</h1>
+    
+    <form id="examForm" class="styled-form">
+      <label for="title">Titre :</label>
+      <input type="text" id="title" name="title" class="input-field" required>
+
+      <label for="description">Description :</label>
+      <textarea id="description" name="description" class="input-field" rows="4" required></textarea>
+
+      <label for="target_group">Public ciblé :</label>
+      <input type="text" id="target_group" name="target_group" class="input-field" required>
+
+      <button type="submit" class="submit-button">Créer</button>
+    </form>
+
+    <div id="linkContainer" class="result-message"></div>
+  </div>
+
+  <script>
+    document.getElementById('examForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      const res = await fetch('/api/exams/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        document.getElementById('linkContainer').innerText = `Lien généré : ${window.location.origin}/take/${result.link}`;
+      } else {
+        alert('Erreur lors de la création');
+      }
+    });
+  </script>
+
+</body>
+</html>

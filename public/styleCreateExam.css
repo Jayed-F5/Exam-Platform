@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body.create-exam-page {
+    background-color: #f5f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .form-container {
+    background: #ffffff;
+    padding: 3rem 2.5rem;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .quizzy-logo {
+    height: 100px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #1e1e2f;
+    margin-bottom: 2rem;
+  }
+  
+  .styled-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .styled-form label {
+    font-weight: 600;
+    text-align: left;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s;
+  }
+  
+  .input-field:focus {
+    border-color: #0066cc;
+    outline: none;
+  }
+  
+  .submit-button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #0066cc;
+    color: #ffffff;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+  }
+  
+  .submit-button:hover {
+    background-color: #0052a3;
+  }
+  
+  .result-message {
+    margin-top: 1.5rem;
+    color: #006400;
+    font-weight: bold;
+    text-align: center;
+  }
+  

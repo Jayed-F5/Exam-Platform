@@ -4,7 +4,7 @@ const path = require('path');
 const db = require('../models/db');
 const crypto = require('crypto');
 
-// Serve the HTML Create Exam page
+// Serve the HTML
 router.get('/create-exam.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/create-exam.html'));
 });
@@ -14,11 +14,11 @@ router.post('/api/exams/create', async (req, res) => {
   const { title, description, target_group } = req.body;
   const link = crypto.randomBytes(6).toString('hex');
 
-  const user_id = req.session.user.id; // ✅ use req.session.user.id (not userId)
-
-  if (!user_id) {
+  if (!req.session || !req.session.user || !req.session.user.id) {
     return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
+
+  const user_id = req.session.user.id;
 
   try {
     const sql = 'INSERT INTO exam (title, description, target_group, link, user_id) VALUES (?, ?, ?, ?, ?)';
