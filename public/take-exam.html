@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Passer l'examen</title>
+  <link rel="stylesheet" href="styleTakeExam.css" />
+</head>
+<body class="take-exam-page">
+  <div class="exam-container">
+    <h1 id="examTitle">Chargement de l'examen...</h1>
+    <div id="questionArea"></div>
+    <div id="timer" style="font-weight: bold; margin-top: 10px;"></div>
+    <button id="submitBtn" class="submit-button" style="display: none;">Soumettre la réponse</button>
+    <div id="resultMessage" class="result-message"></div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const examLink = urlParams.get('link');
+    const examTitle = document.getElementById('examTitle');
+    const questionArea = document.getElementById('questionArea');
+    const resultDiv = document.getElementById('resultMessage');
+    const timerEl = document.getElementById('timer');
+    const submitBtn = document.getElementById('submitBtn');
+
+    let examData = null;
+    let currentIndex = 0;
+    const answers = {};
+    let currentTimer = null;
+    let currentQuestion = null;
+
+    async function loadExam() {
+      const res = await fetch('/api/exams/get', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ link: examLink })
+      });
+
+      const data = await res.json();
+      if (!data.success || !data.exam || !data.exam.questions) {
+        examTitle.textContent = "Examen introuvable.";
+        return;
+      }
+
+      examData = data.exam;
+      examTitle.textContent = examData.title;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentIndex >= examData.questions.length) {
+        submitExam();
+        return;
+      }
+
+      clearInterval(currentTimer);
+      questionArea.innerHTML = '';
+      timerEl.innerHTML = '';
+      submitBtn.style.display = 'inline-block';
+
+      const q = examData.questions[currentIndex];
+      currentQuestion = q;
+
+      const block = document.createElement('div');
+      block.className = 'question-block';
+      block.innerHTML = `<p><strong>Q${currentIndex + 1}:</strong> ${q.statement}</p>`;
+
+      // ✅ Media display logic
+      if (q.media) {
+        const ext = q.media.split('.').pop().toLowerCase();
+        let mediaEl;
+
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+          mediaEl = document.createElement('img');
+          mediaEl.src = q.media;
+          mediaEl.alt = "Image";
+          mediaEl.style.maxWidth = "100%";
+          mediaEl.style.marginTop = "10px";
+        } else if (['mp3', 'wav', 'ogg'].includes(ext)) {
+          mediaEl = document.createElement('audio');
+          mediaEl.controls = true;
+          mediaEl.src = q.media;
+        } else if (['mp4', 'webm', 'ogg'].includes(ext)) {
+          mediaEl = document.createElement('video');
+          mediaEl.controls = true;
+          mediaEl.src = q.media;
+          mediaEl.style.maxWidth = "100%";
+          mediaEl.style.marginTop = "10px";
+        }
+
+        if (mediaEl) {
+          block.appendChild(document.createElement('br'));
+          block.appendChild(mediaEl);
+        }
+      }
+
+      // ✅ QCM Options
+      if (q.type === 'qcm' && q.options?.length > 0) {
+        q.options.forEach(opt => {
+          const label = document.createElement('label');
+          label.innerHTML = `
+            <input type="checkbox" name="q${q.id}" value="${opt.id}"> ${opt.option_text}
+          `;
+          block.appendChild(label);
+          block.appendChild(document.createElement('br'));
+        });
+      }
+
+      // ✅ Direct answer
+      else if (q.type === 'direct') {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = `q${q.id}`;
+        input.required = true;
+        block.appendChild(input);
+      }
+
+      questionArea.appendChild(block);
+      startTimer(q.duration || 30); // default to 30 seconds
+    }
+
+    function startTimer(seconds) {
+      let remaining = seconds;
+      timerEl.textContent = `Temps restant : ${remaining} secondes`;
+      currentTimer = setInterval(() => {
+        remaining--;
+        timerEl.textContent = `Temps restant : ${remaining} secondes`;
+        if (remaining <= 0) {
+          clearInterval(currentTimer);
+          submitCurrentAnswer();
+        }
+      }, 1000);
+    }
+
+    submitBtn.addEventListener('click', () => {
+      clearInterval(currentTimer);
+      submitCurrentAnswer();
+    });
+
+    function submitCurrentAnswer() {
+      const inputs = document.querySelectorAll(`input[name="q${currentQuestion.id}"]`);
+      const collected = [];
+
+      inputs.forEach(input => {
+        if ((input.type === 'checkbox' && input.checked) || input.type === 'text') {
+          collected.push(input.value);
+        }
+      });
+
+      answers[`q${currentQuestion.id}`] = collected;
+      currentIndex++;
+      showQuestion();
+    }
+
+    async function submitExam() {
+      questionArea.innerHTML = '';
+      timerEl.innerHTML = '';
+      submitBtn.style.display = 'none';
+
+      const res = await fetch('/api/exams/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ link: examLink, answers })
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        const score100 = Math.round((result.score / result.total) * 100);
+        resultDiv.innerHTML = `<strong>Score :</strong> ${score100} / 100`;
+        resultDiv.style.color = 'green';
+      } else {
+        resultDiv.textContent = 'Erreur lors de la soumission.';
+        resultDiv.style.color = 'red';
+      }
+    }
+
+    loadExam();
+  </script>
+</body>
+</html>

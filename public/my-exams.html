@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Exams</title>
+  <link rel="stylesheet" href="/my-exams.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="my-exams-page">
+  <div class="top-bar">
+    <div class="logo-container">
+      <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
+    </div>
+    <div>
+      <button onclick="window.location.href='/dashboard.html'" class="btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </button>
+      <button id="logout-btn" class="btn btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <main class="main-wrapper">
+    <h1 style="text-align:center;">My Exams</h1>
+    <div id="examList" style="max-width:800px; margin:0 auto;"></div>
+  </main>
+
+  <script>
+    // Fetch and list exams
+    async function loadMyExams() {
+      const res = await fetch('/api/exams/mine');
+      const data = await res.json();
+      const list = document.getElementById('examList');
+
+      if (data.success && data.exams.length) {
+        data.exams.forEach(exam => {
+          const item = document.createElement('div');
+          item.className = 'exam-item';
+          item.style = "border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px";
+
+          item.innerHTML = `
+  <strong>${exam.title}</strong><br>
+  ${exam.description}<br><br>
+  <a href="/take-exam.html?link=${exam.link}" class="btn" target="_blank">🎓 Take</a>
+  <a href="/edit-questions.html?examId=${exam.id}" class="btn">✏️ Edit</a>
+  <button onclick="deleteExam(${exam.id}, this)" class="btn">🗑️ Delete</button>
+`;
+
+
+          list.appendChild(item);
+        });
+      } else {
+        list.innerHTML = '<p style="text-align:center;">No exams found.</p>';
+      }
+    }
+
+    async function deleteExam(id, btn) {
+      if (!confirm("Delete this exam?")) return;
+      const res = await fetch(`/api/exams/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        btn.closest('.exam-item').remove();
+      } else {
+        alert("Failed to delete exam.");
+      }
+    }
+
+    // Handle logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      window.location.href = '/logout';
+    });
+
+    loadMyExams();
+  </script>
+</body>
+</html>

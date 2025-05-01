@@ -21,7 +21,7 @@
 
       <label for="target_group">Public ciblé :</label>
       <input type="text" id="target_group" name="target_group" class="input-field" required>
-
+    
       <button type="submit" class="submit-button">Créer</button>
     </form>
 
@@ -31,6 +31,7 @@
   <script>
     document.getElementById('examForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+
       const formData = new FormData(this);
       const data = Object.fromEntries(formData.entries());
 
@@ -41,8 +42,8 @@
       });
 
       const result = await res.json();
-      if (result.success) {
-        document.getElementById('linkContainer').innerText = `Lien généré : ${window.location.origin}/take/${result.link}`;
+      if (result.success && result.examId) {
+        window.location.href = `/add-questions.html?examId=${result.examId}`;
       } else {
         alert('Erreur lors de la création');
       }

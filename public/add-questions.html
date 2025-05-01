@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ajouter des Questions</title>
+  <link rel="stylesheet" href="styleAddQuestions.css">
+</head>
+<body class="add-questions-page">
+
+  <div class="form-container">
+    <h1>Ajouter des Questions</h1>
+
+    <form id="questionForm" class="styled-form" enctype="multipart/form-data">
+      <input type="hidden" name="exam_id" id="examId">
+
+      <label for="questionTypeSelect">Type de question :</label>
+      <select name="type" id="questionTypeSelect" required>
+        <option value="">-- Choisir le type --</option>
+        <option value="qcm">QCM</option>
+        <option value="direct">Directe</option>
+      </select>
+
+      <label for="statement">Énoncé de la question :</label>
+      <textarea name="statement" id="statement" required></textarea>
+
+      <div id="qcmFields" style="display: none;">
+        <label>Options :</label>
+        <div id="qcmOptionsContainer"></div>
+        <button type="button" id="addOptionBtn" class="submit-button" style="margin-top: 15px; background-color: #6c757d;">
+          Ajouter une option
+        </button>
+      </div>
+
+      <div id="directFields" style="display: none;">
+        <label for="answer">Réponse correcte :</label>
+        <input type="text" name="answer" id="answer">
+
+        <label for="tolerance">Tolérance (%) :</label>
+        <input type="number" name="tolerance" id="tolerance" min="0" max="100" step="1" />
+      </div>
+
+      <label for="points">Points :</label>
+      <input type="number" name="points" id="points" required>
+
+      <label for="duration">Durée (secondes) :</label>
+      <input type="number" name="duration" id="duration" required>
+
+      <label for="media">Média (image, audio ou vidéo) :</label>
+      <input type="file" name="media" id="media" accept="image/*,audio/*,video/*" class="input-field">
+
+      <button type="submit" class="submit-button">Ajouter la Question</button>
+    </form>
+
+    <div id="successMessage" style="display: none; margin-top: 20px; color: green;">
+      Question ajoutée avec succès !
+    </div>
+
+    <button id="finishExam" class="submit-button" style="background: green; margin-top: 20px;">Terminer et Générer le Lien</button>
+    <div id="generatedLink" style="margin-top: 20px; text-align: center; font-weight: bold;"></div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const examId = urlParams.get('examId');
+    document.getElementById('examId').value = examId;
+
+    const qcmContainer = document.getElementById('qcmOptionsContainer');
+    const questionTypeSelect = document.getElementById('questionTypeSelect');
+    const answerInput = document.getElementById('answer');
+    const toleranceInput = document.getElementById('tolerance');
+
+    function addQcmOption(required = false) {
+      const index = qcmContainer.querySelectorAll('input[name^="option"]').length + 1;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'qcm-option';
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.name = `option${index}`;
+      input.placeholder = `Option ${index}`;
+      if (required) input.required = true;
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'correct[]';
+      checkbox.value = index;
+
+      const label = document.createElement('label');
+      label.textContent = ' Correct';
+      label.prepend(checkbox);
+
+      wrapper.appendChild(input);
+      wrapper.appendChild(label);
+      qcmContainer.appendChild(wrapper);
+    }
+
+    questionTypeSelect.addEventListener('change', function () {
+      const selected = this.value;
+      document.getElementById('qcmFields').style.display = selected === 'qcm' ? 'block' : 'none';
+      document.getElementById('directFields').style.display = selected === 'direct' ? 'block' : 'none';
+
+      // QCM
+      if (selected === 'qcm') {
+        qcmContainer.innerHTML = '';
+        addQcmOption(true);
+        addQcmOption(true);
+      }
+
+      // Set required fields dynamically
+      answerInput.required = selected === 'direct';
+      toleranceInput.required = selected === 'direct';
+    });
+
+    document.getElementById('addOptionBtn').addEventListener('click', () => addQcmOption(false));
+
+    const form = document.getElementById('questionForm');
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const selectedType = questionTypeSelect.value;
+      if (!selectedType) {
+        alert('Veuillez sélectionner le type de question.');
+        return;
+      }
+
+      const formData = new FormData(this);
+
+      if (selectedType === 'qcm') {
+        const correctValues = [...form.querySelectorAll('input[name="correct[]"]:checked')].map(cb => cb.value);
+        if (correctValues.length === 0) {
+          alert("Veuillez cocher au moins une réponse correcte.");
+          return;
+        }
+        formData.append('correctOption', correctValues.join(','));
+      }
+
+      try {
+        const res = await fetch('/api/questions/add', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await res.json();
+        console.log('✅ Response:', result);
+
+        if (result.success) {
+          document.getElementById('successMessage').style.display = 'block';
+          form.reset();
+          qcmContainer.innerHTML = '';
+          document.getElementById('qcmFields').style.display = 'none';
+          document.getElementById('directFields').style.display = 'none';
+        } else {
+          alert("Erreur lors de l'ajout de la question : " + (result.error || 'Inconnue'));
+          console.error('❌ Backend said:', result);
+        }
+
+      } catch (err) {
+        console.error('Erreur réseau:', err);
+        alert("Erreur de connexion.");
+      }
+    });
+
+    document.getElementById('finishExam').addEventListener('click', async function () {
+      const res = await fetch('/api/exams/generate-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ examId })
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        const linkDiv = document.getElementById('generatedLink');
+        const fullLink = `${window.location.origin}/take-exam.html?link=${result.link}`;
+        linkDiv.innerHTML = `Lien généré : <a href="${fullLink}" target="_blank">${fullLink}</a>`;
+      } else {
+        alert("Erreur lors de la génération du lien.");
+      }
+    });
+  </script>  
+</body>
+</html>

@@ -14,9 +14,12 @@
       <div class="logo-container">
         <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
       </div>
-      <button class="btn btn-logout" id="logout-btn">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
+      <div>
+        <a href="/my-exams.html" class="btn"><i class="fas fa-list"></i> My Exams</a>
+        <button class="btn btn-logout" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
     </div>
   </header>
 
@@ -48,7 +51,7 @@
   </main>
 
   <script>
-    // Fetch user info to display
+    // Fetch user info
     fetch('/api/user')
       .then(res => res.json())
       .then(data => {
@@ -56,7 +59,7 @@
       })
       .catch(() => window.location.href = '/login.html');
 
-    // Handle logout
+    // Logout handler
     document.getElementById('logout-btn').addEventListener('click', () => {
       window.location.href = '/logout';
     });
