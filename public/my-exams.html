@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>My Exams</title>
-  <link rel="stylesheet" href="/my-exams.css" />
+  <link rel="stylesheet" href="my-exams.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -28,51 +28,69 @@
   </main>
 
   <script>
-    // Fetch and list exams
     async function loadMyExams() {
-      const res = await fetch('/api/exams/mine');
-      const data = await res.json();
-      const list = document.getElementById('examList');
+    const res = await fetch('/api/exams/mine');
+    const data = await res.json();
+    const list = document.getElementById('examList');
 
-      if (data.success && data.exams.length) {
-        data.exams.forEach(exam => {
-          const item = document.createElement('div');
-          item.className = 'exam-item';
-          item.style = "border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px";
+    if (data.success && data.exams.length) {
+      list.innerHTML = ''; // clear existing list
 
-          item.innerHTML = `
-  <strong>${exam.title}</strong><br>
-  ${exam.description}<br><br>
-  <a href="/take-exam.html?link=${exam.link}" class="btn" target="_blank">🎓 Take</a>
-  <a href="/edit-questions.html?examId=${exam.id}" class="btn">✏️ Edit</a>
-  <button onclick="deleteExam(${exam.id}, this)" class="btn">🗑️ Delete</button>
-`;
+      data.exams.forEach(exam => {
+        const item = document.createElement('div');
+        item.className = 'exam-item';
+        item.style = "border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px";
 
+        item.innerHTML = `
+          <strong>${exam.title}</strong><br>
+          ${exam.description}<br><br>
+          <a href="/take-exam.html?link=${exam.link}" class="btn" target="_blank">🎓 Take</a>
+          <a href="/add-questions.html?examId=${exam.id}" class="btn">✏️ Edit</a>
+          <button onclick="showDeleteConfirm(${exam.id}, this)" class="btn">🗑️ Delete</button>
+        `;
 
-          list.appendChild(item);
-        });
-      } else {
-        list.innerHTML = '<p style="text-align:center;">No exams found.</p>';
-      }
+        list.appendChild(item);
+      });
+    } else {
+      list.innerHTML = '<p style="text-align:center;">No exams found.</p>';
     }
+  }
 
-    async function deleteExam(id, btn) {
-      if (!confirm("Delete this exam?")) return;
-      const res = await fetch(`/api/exams/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        btn.closest('.exam-item').remove();
-      } else {
-        alert("Failed to delete exam.");
-      }
+  function showDeleteConfirm(id, btn) {
+    // prevent multiple confirms
+    if (btn.nextElementSibling?.classList.contains('confirm-delete')) return;
+
+    const confirmBox = document.createElement('div');
+    confirmBox.className = 'confirm-delete';
+    confirmBox.innerHTML = `
+      <p>Supprimer cet examen ?</p>
+      <button onclick="confirmDelete(${id}, this)">✅ Confirmer</button>
+    `;
+    btn.insertAdjacentElement('afterend', confirmBox);
+  }
+
+  async function confirmDelete(id, confirmBtn) {
+    const container = confirmBtn.closest('.exam-item');
+    const res = await fetch(`/api/exams/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+
+    const msg = document.createElement('div');
+    msg.className = data.success ? 'success-message' : 'error-message';
+    msg.textContent = data.success ? '✅ Examen supprimé.' : '❌ Échec de la suppression.';
+    container.appendChild(msg);
+
+    if (data.success) {
+      setTimeout(() => container.remove(), 2000);
+    } else {
+      setTimeout(() => msg.remove(), 5000);
     }
+  }
 
-    // Handle logout
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      window.location.href = '/logout';
-    });
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    window.location.href = '/logout';
+  });
 
-    loadMyExams();
+  loadMyExams();
   </script>
 </body>
 </html>

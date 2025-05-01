@@ -16,7 +16,7 @@
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const examLink = urlParams.get('link');
+    const examLink = urlParams.get('examCode');
     const examTitle = document.getElementById('examTitle');
     const questionArea = document.getElementById('questionArea');
     const resultDiv = document.getElementById('resultMessage');
@@ -28,23 +28,50 @@
     const answers = {};
     let currentTimer = null;
     let currentQuestion = null;
+    let userLocation = null;
 
-    async function loadExam() {
-      const res = await fetch('/api/exams/get', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: examLink })
+    // Étape 1 : demander la géolocalisation
+    async function askGeolocation() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          alert("La géolocalisation n'est pas supportée par ce navigateur.");
+          reject("Non supporté");
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              userLocation = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+              };
+              resolve();
+            },
+            (error) => {
+              alert("⚠️ Géolocalisation refusée. Vous ne pouvez pas continuer l'examen.");
+              reject(error);
+            }
+          );
+        }
       });
+    }
 
-      const data = await res.json();
-      if (!data.success || !data.exam || !data.exam.questions) {
-        examTitle.textContent = "Examen introuvable.";
-        return;
+    // Chargement de l’examen après géolocalisation
+    async function loadExam() {
+      try {
+        const res = await fetch(`/api/exams/by-code/${examLink}`);
+        const data = await res.json();
+
+        if (!data.success || !data.exam || !data.exam.questions) {
+          examTitle.textContent = "Examen introuvable.";
+          return;
+        }
+
+        examData = data.exam;
+        examTitle.textContent = examData.title;
+        showQuestion();
+      } catch (err) {
+        console.error("Erreur de chargement :", err);
+        examTitle.textContent = "Erreur lors du chargement de l'examen.";
       }
-
-      examData = data.exam;
-      examTitle.textContent = examData.title;
-      showQuestion();
     }
 
     function showQuestion() {
@@ -65,7 +92,6 @@
       block.className = 'question-block';
       block.innerHTML = `<p><strong>Q${currentIndex + 1}:</strong> ${q.statement}</p>`;
 
-      // ✅ Media display logic
       if (q.media) {
         const ext = q.media.split('.').pop().toLowerCase();
         let mediaEl;
@@ -80,7 +106,7 @@
           mediaEl = document.createElement('audio');
           mediaEl.controls = true;
           mediaEl.src = q.media;
-        } else if (['mp4', 'webm', 'ogg'].includes(ext)) {
+        } else if (['mp4', 'webm'].includes(ext)) {
           mediaEl = document.createElement('video');
           mediaEl.controls = true;
           mediaEl.src = q.media;
@@ -94,7 +120,6 @@
         }
       }
 
-      // ✅ QCM Options
       if (q.type === 'qcm' && q.options?.length > 0) {
         q.options.forEach(opt => {
           const label = document.createElement('label');
@@ -104,10 +129,7 @@
           block.appendChild(label);
           block.appendChild(document.createElement('br'));
         });
-      }
-
-      // ✅ Direct answer
-      else if (q.type === 'direct') {
+      } else if (q.type === 'direct') {
         const input = document.createElement('input');
         input.type = 'text';
         input.name = `q${q.id}`;
@@ -116,7 +138,7 @@
       }
 
       questionArea.appendChild(block);
-      startTimer(q.duration || 30); // default to 30 seconds
+      startTimer(q.duration || 30);
     }
 
     function startTimer(seconds) {
@@ -160,7 +182,11 @@
       const res = await fetch('/api/exams/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: examLink, answers })
+        body: JSON.stringify({
+          link: examLink,
+          answers,
+          location: userLocation // 🛰️ envoyé au backend
+        })
       });
 
       const result = await res.json();
@@ -174,7 +200,13 @@
       }
     }
 
-    loadExam();
+    // ✅ Démarrage après géolocalisation
+    askGeolocation()
+      .then(() => loadExam())
+      .catch(() => {
+        examTitle.textContent = "⚠️ Géolocalisation requise pour commencer l'examen.";
+        questionArea.innerHTML = '';
+      });
   </script>
 </body>
 </html>

@@ -1,108 +1,59 @@
 body.add-questions-page {
-  background-color: #f5f7fa;
+  background-color: #f0f2f5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
 }
 
 .form-container {
-  max-width: 500px;
-  margin: 50px auto;
-  padding: 30px 40px;
-  background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 25px 30px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.form-container h1 {
+h1 {
   text-align: center;
-  margin-bottom: 25px;
-  font-size: 26px;
-  font-weight: bold;
-  color: #111;
-}
-
-.styled-form label {
-  display: block;
-  margin-top: 15px;
-  font-size: 15px;
-  font-weight: 600;
+  margin-bottom: 30px;
   color: #333;
 }
 
-.styled-form input[type="text"],
-.styled-form input[type="number"],
-.styled-form textarea {
+label {
+  font-weight: 600;
+  margin-top: 10px;
+  display: block;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+textarea,
+select {
   width: 100%;
-  padding: 10px 12px;
-  margin-top: 6px;
-  font-size: 14px;
+  padding: 10px;
+  font-size: 15px;
+  margin-top: 5px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 6px;
   box-sizing: border-box;
 }
 
-.styled-form textarea {
+textarea {
   resize: vertical;
-  min-height: 80px;
-}
-
-.qcm-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 10px;
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-.input-with-icon {
-  position: relative;
-  width: 100%;
-}
-
-.input-with-icon input[type="text"] {
-  width: 100%;
-  padding-right: 30px;
-}
-
-.delete-option {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 16px;
-  color: #888; /* gray by default */
-  user-select: none;
-  transition: color 0.2s ease;
-}
-
-.delete-option:hover {
-  color: #c00;
-}
-
-
-.fixed-option .delete-option {
-  display: none;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .submit-button {
-  margin-top: 25px;
-  padding: 12px;
-  width: 100%;
-  font-size: 16px;
-  font-weight: bold;
+  padding: 10px 20px;
   background-color: #007bff;
+  font-weight: bold;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .submit-button:hover {
@@ -110,15 +61,106 @@ body.add-questions-page {
 }
 
 #successMessage {
-  text-align: center;
+  font-weight: bold;
   color: green;
-  margin-top: 15px;
-  font-weight: 600;
+  text-align: center;
+  font-size: 16px;
 }
 
+#generatedLink {
+  font-size: 16px;
+  color: #333;
+}
+
+/* QCM Option Styling */
+.qcm-option {
+  position: relative;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qcm-option input[type="text"] {
+  flex: 1;
+  padding: 8px;
+  padding-right: 35px;
+  box-sizing: border-box;
+}
+
+.delete-option {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #dc3545;
+}
+
+.delete-option:hover {
+  color: #a61d2d;
+}
+
+.qcm-option label {
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+/* Disappearance animation */
+.fade-out {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; height: auto; margin-bottom: 10px; }
+  to { opacity: 0; height: 0; margin-bottom: 0; padding: 0; overflow: hidden; }
+}
+
+/* Responsive */
 @media (max-width: 600px) {
   .form-container {
     margin: 20px;
     padding: 20px;
   }
+
+  .submit-button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+.input-with-icon {
+  position: relative;
+  flex: 1;
+}
+
+.input-with-icon input[type="text"] {
+  width: 100%;
+  padding-right: 35px;
+  box-sizing: border-box;
+  height: 38px; /* facultatif, pour homogénéité */
+}
+
+.input-with-icon .delete-option {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #dc3545;
+  padding: 0;
+}
+
+.input-with-icon .delete-option:hover {
+  color: #a61d2d;
 }

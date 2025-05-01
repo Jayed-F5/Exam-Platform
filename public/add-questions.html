@@ -51,8 +51,8 @@
       <button type="submit" class="submit-button">Ajouter la Question</button>
     </form>
 
-    <div id="successMessage" style="display: none; margin-top: 20px; color: green;">
-      Question ajoutée avec succès !
+    <div id="successMessage" style="display: none; margin-top: 20px;">
+      ✅ Question ajoutée avec succès !
     </div>
 
     <button id="finishExam" class="submit-button" style="background: green; margin-top: 20px;">Terminer et Générer le Lien</button>
@@ -68,9 +68,10 @@
     const questionTypeSelect = document.getElementById('questionTypeSelect');
     const answerInput = document.getElementById('answer');
     const toleranceInput = document.getElementById('tolerance');
+    let questionCount = 0;
 
     function addQcmOption(required = false) {
-      const index = qcmContainer.querySelectorAll('input[name^="option"]').length + 1;
+      const index = qcmContainer.querySelectorAll('.qcm-option').length + 1;
 
       const wrapper = document.createElement('div');
       wrapper.className = 'qcm-option';
@@ -79,7 +80,20 @@
       input.type = 'text';
       input.name = `option${index}`;
       input.placeholder = `Option ${index}`;
-      if (required) input.required = true;
+      input.required = required;
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-3h4m-4 0a1 1 0 00-1 1v1h6V5a1 1 0 00-1-1m-4 0h4" />
+  </svg>`;
+      deleteBtn.className = 'delete-option';
+      deleteBtn.onclick = () => {
+        wrapper.classList.add('fade-out');
+        setTimeout(() => wrapper.remove(), 300);
+      };
 
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -90,8 +104,14 @@
       label.textContent = ' Correct';
       label.prepend(checkbox);
 
-      wrapper.appendChild(input);
-      wrapper.appendChild(label);
+      const inputWrapper = document.createElement('div');
+inputWrapper.className = 'input-with-icon';
+inputWrapper.appendChild(input);
+if (!required) inputWrapper.appendChild(deleteBtn);
+
+wrapper.appendChild(inputWrapper);
+wrapper.appendChild(label);
+
       qcmContainer.appendChild(wrapper);
     }
 
@@ -100,14 +120,12 @@
       document.getElementById('qcmFields').style.display = selected === 'qcm' ? 'block' : 'none';
       document.getElementById('directFields').style.display = selected === 'direct' ? 'block' : 'none';
 
-      // QCM
       if (selected === 'qcm') {
         qcmContainer.innerHTML = '';
-        addQcmOption(true);
-        addQcmOption(true);
+        addQcmOption(true);  // Option 1 (non supprimable)
+        addQcmOption(true);  // Option 2 (non supprimable)
       }
 
-      // Set required fields dynamically
       answerInput.required = selected === 'direct';
       toleranceInput.required = selected === 'direct';
     });
@@ -119,10 +137,7 @@
       e.preventDefault();
 
       const selectedType = questionTypeSelect.value;
-      if (!selectedType) {
-        alert('Veuillez sélectionner le type de question.');
-        return;
-      }
+      if (!selectedType) return;
 
       const formData = new FormData(this);
 
@@ -142,26 +157,31 @@
         });
 
         const result = await res.json();
-        console.log('✅ Response:', result);
-
         if (result.success) {
           document.getElementById('successMessage').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('successMessage').style.display = 'none';
+          }, 4000);
+
           form.reset();
           qcmContainer.innerHTML = '';
           document.getElementById('qcmFields').style.display = 'none';
           document.getElementById('directFields').style.display = 'none';
-        } else {
-          alert("Erreur lors de l'ajout de la question : " + (result.error || 'Inconnue'));
-          console.error('❌ Backend said:', result);
-        }
 
+          questionCount++;
+        }
       } catch (err) {
         console.error('Erreur réseau:', err);
-        alert("Erreur de connexion.");
       }
     });
 
     document.getElementById('finishExam').addEventListener('click', async function () {
+      if (questionCount === 0) {
+        const linkDiv = document.getElementById('generatedLink');
+        linkDiv.innerHTML = `<span style="color:red;">❌ Ajoutez au moins une question avant de générer le lien.</span>`;
+        return;
+      }
+
       const res = await fetch('/api/exams/generate-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -170,13 +190,25 @@
 
       const result = await res.json();
       if (result.success) {
+        const code = result.link;
         const linkDiv = document.getElementById('generatedLink');
-        const fullLink = `${window.location.origin}/take-exam.html?link=${result.link}`;
-        linkDiv.innerHTML = `Lien généré : <a href="${fullLink}" target="_blank">${fullLink}</a>`;
-      } else {
-        alert("Erreur lors de la génération du lien.");
+        linkDiv.innerHTML = `
+          Code de l'examen : <span id="examCode">${code}</span><br>
+          <button id="copyCodeBtn" class="submit-button" style="background: orange; margin-top: 10px;">
+            Copier le code
+          </button>
+          <div id="copyFeedback" style="color: green; font-weight: bold; margin-top: 10px;"></div>
+        `;
+
+        document.getElementById('copyCodeBtn').addEventListener('click', () => {
+          navigator.clipboard.writeText(code).then(() => {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.textContent = "✅ Code copié dans le presse-papiers.";
+            setTimeout(() => feedback.textContent = '', 4000);
+          });
+        });
       }
     });
-  </script>  
+  </script>
 </body>
 </html>
