@@ -1,90 +1,145 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  body.create-exam-page {
-    background-color: #f5f7fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
-  
-  .form-container {
-    background: #ffffff;
-    padding: 3rem 2.5rem;
-    border-radius: 12px;
-    max-width: 500px;
-    width: 100%;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .quizzy-logo {
-    height: 100px;
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-title {
-    font-size: 2.2rem;
-    font-weight: bold;
-    color: #1e1e2f;
-    margin-bottom: 2rem;
-  }
-  
-  .styled-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .styled-form label {
-    font-weight: 600;
-    text-align: left;
-    margin-bottom: 5px;
-    color: #333;
-  }
-  
-  .input-field {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s;
-  }
-  
-  .input-field:focus {
-    border-color: #0066cc;
-    outline: none;
-  }
-  
-  .submit-button {
-    width: 100%;
-    padding: 1rem;
-    background-color: #0066cc;
-    color: #ffffff;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 1rem;
-  }
-  
-  .submit-button:hover {
-    background-color: #0052a3;
-  }
-  
-  .result-message {
-    margin-top: 1.5rem;
-    color: #006400;
-    font-weight: bold;
-    text-align: center;
-  }
-  
+:root {
+  --primary-color: #0066cc;
+  --accent-color: #ff9900;
+  --light-bg: #f4f4f4;
+  --light-text: #1c1c1c;
+  --dark-bg: #1a1a2e;
+  --dark-card-bg: #20233a;
+  --dark-text: #eaeaea;
+  --card-bg: #ffffff;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+body.create-exam-page {
+  background: url('/backgroundimg.png') center/cover no-repeat;
+  background-attachment: fixed;
+  color: var(--light-text);
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body.dark.create-exam-page {
+  background: url('/backgdark.png') center/cover no-repeat;
+  background-attachment: fixed;
+  color: var(--dark-text);
+}
+
+/* Container */
+.form-container {
+  background-color: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+body.dark .form-container {
+  background-color: var(--dark-card-bg);
+}
+
+/* Title */
+.form-title {
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  font-size: 1.7rem;
+  font-weight: bold;
+}
+
+/* Back Button */
+.back-button {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  z-index: 10;
+}
+
+.back-button:hover {
+  background-color: var(--accent-color);
+  color: var(--dark-bg);
+}
+
+/* Form */
+.styled-form .form-group {
+  margin-bottom: 1.3rem;
+  text-align: left;
+}
+
+.styled-form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.65rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+body.dark .input-field {
+  background-color: #2a2a3f;
+  border: 1px solid #444;
+  color: var(--dark-text);
+}
+
+/* Button */
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--accent-color);
+  color: var(--dark-bg);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #ffa500d0;
+}
+
+.result-message {
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.theme-toggle-btn {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--accent-color);
+  color: var(--dark-bg);
+}

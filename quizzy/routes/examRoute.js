@@ -120,6 +120,41 @@ router.get('/api/exams/by-code/:code', async (req, res) => {
   }
 });
 
+// ✅ Get Exam by ID (for editing)
+router.post('/api/exams/get', async (req, res) => {
+  const { examId } = req.body;
+
+  try {
+    const [examRows] = await db.promise().query('SELECT * FROM exam WHERE id = ?', [examId]);
+    if (!examRows.length) return res.json({ success: false });
+
+    const exam = examRows[0];
+    const [questions] = await db.promise().query('SELECT * FROM questions WHERE exam_id = ?', [examId]);
+
+    for (const q of questions) {
+      if (q.type === 'qcm') {
+        const [options] = await db.promise().query(
+          'SELECT id, option_text, is_correct FROM options WHERE question_id = ?', [q.id]);
+        q.options = options;
+      }
+    }
+
+    res.json({
+      success: true,
+      exam: {
+        id: exam.id,
+        title: exam.title,
+        description: exam.description,
+        target_group: exam.target_group,
+        questions
+      }
+    });
+  } catch (err) {
+    console.error('❌ Error fetching exam by ID:', err.message);
+    res.status(500).json({ success: false });
+  }
+});
+
 // Get Exams of Logged-in User
 router.get('/api/exams/mine', async (req, res) => {
   if (!req.session?.user?.id) return res.status(401).json({ success: false });
@@ -217,5 +252,115 @@ router.post('/api/exams/submit', async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
+// ✅ Update a question
+router.put('/api/questions/:id', async (req, res) => {
+  const questionId = req.params.id;
+  const { statement, answer, tolerance, duration, points, correct, options } = req.body;
+
+  try {
+    const [[question]] = await db.promise().query('SELECT * FROM questions WHERE id = ?', [questionId]);
+    if (!question) return res.status(404).json({ success: false });
+
+    // Update question table
+    await db.promise().query(
+      'UPDATE questions SET statement = ?, answer = ?, tolerance = ?, duration = ?, points = ? WHERE id = ?',
+      [statement, answer, tolerance, duration, points, questionId]
+    );
+
+    if (question.type === 'qcm') {
+      // Delete old options
+      await db.promise().query('DELETE FROM options WHERE question_id = ?', [questionId]);
+
+      // Insert updated options
+      for (const [id, text] of Object.entries(options)) {
+        const isCorrect = correct.includes(id) ? 1 : 0;
+        await db.promise().query(
+          'INSERT INTO options (question_id, option_text, is_correct) VALUES (?, ?, ?)',
+          [questionId, text, isCorrect]
+        );
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Error updating question:', err.message);
+    res.status(500).json({ success: false });
+  }
+});
+
+// ✅ Delete a question
+router.delete('/api/questions/:id', async (req, res) => {
+  const questionId = req.params.id;
+
+  try {
+    // Delete from options first to maintain foreign key constraints
+    await db.promise().query('DELETE FROM options WHERE question_id = ?', [questionId]);
+    await db.promise().query('DELETE FROM questions WHERE id = ?', [questionId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Error deleting question:', err.message);
+    res.status(500).json({ success: false });
+  }
+});
+// ✅ Update exam info
+router.put('/api/exams/:examId', async (req, res) => {
+  const { examId } = req.params;
+  const { title, description, target_group } = req.body;
+
+  try {
+    await db.promise().query(
+      'UPDATE exam SET title = ?, description = ?, target_group = ? WHERE id = ?',
+      [title, description, target_group, examId]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Error updating exam:', err.message);
+    res.status(500).json({ success: false });
+  }
+});
+
+async function deleteExam(examId) {
+  if (!confirm("Confirmer la suppression de cet examen ?")) return;
+
+  const res = await fetch(`/api/exams/${examId}`, {
+    method: 'DELETE'
+  });
+
+  const result = await res.json();
+  if (result.success) {
+    alert('✅ Examen supprimé.');
+    location.reload(); // or remove the element from DOM directly
+  } else {
+    alert('❌ Échec de la suppression.');
+  }
+}
+
+// ✅ Delete an exam by ID
+router.delete('/api/exams/:examId', async (req, res) => {
+  const { examId } = req.params;
+  console.log("🧪 Deleting exam ID:", examId);
+
+  try {
+    // Get all question IDs for the exam
+    const [questionIds] = await db.promise().query('SELECT id FROM questions WHERE exam_id = ?', [examId]);
+
+    // Delete options for each question
+    for (const q of questionIds) {
+      await db.promise().query('DELETE FROM options WHERE question_id = ?', [q.id]);
+    }
+
+    // Delete questions, then the exam
+    await db.promise().query('DELETE FROM questions WHERE exam_id = ?', [examId]);
+    await db.promise().query('DELETE FROM exam WHERE id = ?', [examId]);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Error deleting exam:', err.message);
+    res.status(500).json({ success: false });
+  }
+});
+
+
 
 module.exports = router;

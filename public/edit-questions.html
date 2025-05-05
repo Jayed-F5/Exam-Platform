@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Modifier l'Examen</title>
-  <link rel="stylesheet" href="styleEditQuestions.css" />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="edit-questions-page">
   <div class="container">
@@ -12,22 +13,22 @@
     <form id="examInfoForm" style="margin-bottom: 40px;">
       <label>Titre :</label><br>
       <input type="text" id="examTitle" name="title"><br>
-
+    
       <label>Description :</label><br>
       <textarea id="examDescription" name="description"></textarea><br>
-
+    
       <label>Public ciblé :</label><br>
       <input type="text" id="examTarget" name="target_group"><br>
-
-      <button type="submit">💾 Mettre à jour l'examen</button>
+    
+      <button type="submit" class="btn"><i class="fas fa-save"></i> Mettre à jour l'examen</button>
+      <div id="examUpdateMessage" class="feedback-message" style="display:none;"></div>
     </form>
+    
 
     <h2>Questions existantes</h2>
     <div id="questionsContainer"></div>
 
-    <button onclick="window.location.href='/add-questions.html?examId=' + examId" class="btn">
-      ➕ Ajouter une nouvelle question
-    </button>
+    <button id="addNewQuestion" class="btn"><i class="fas fa-plus"></i> Ajouter une nouvelle question</button>
   </div>
 
   <script>
@@ -53,93 +54,127 @@
       document.getElementById('examDescription').value = data.exam.description || '';
       document.getElementById('examTarget').value = data.exam.target_group || '';
 
-      data.exam.questions.forEach(q => {
-        const div = document.createElement('div');
-        div.className = 'question-block';
+      data.exam.questions.forEach(renderQuestion);
+    }
 
-        div.innerHTML = `
-          <form data-id="${q.id}">
-            <h3>Question #${q.id} (${q.type})</h3>
-            <label>Énoncé :</label><br>
-            <textarea name="statement">${q.statement}</textarea><br>
+    function renderQuestion(q) {
+      const div = document.createElement('div');
+      div.className = 'question-block';
+      div.innerHTML = `
+        <form data-id="${q.id}">
+          <h3>Question #${q.id} (${q.type})</h3>
+          <label>Énoncé :</label><br>
+          <textarea name="statement">${q.statement}</textarea><br>
 
-            ${q.type === 'direct' ? `
-              <label>Réponse :</label><br>
-              <input type="text" name="answer" value="${q.answer || ''}"><br>
-              <label>Tolérance :</label><br>
-              <input type="number" name="tolerance" value="${q.tolerance || 0}"><br>
-            ` : ''}
+          ${q.type === 'direct' ? `
+            <label>Réponse :</label><br>
+            <input type="text" name="answer" value="${q.answer || ''}"><br>
+            <label>Tolérance :</label><br>
+            <input type="number" name="tolerance" value="${q.tolerance || 0}"><br>
+          ` : ''}
 
-            ${q.type === 'qcm' ? q.options.map(opt => `
-              <div class="option-block">
-                <input type="text" name="option${opt.id}" value="${opt.option_text}">
-                <label><input type="checkbox" name="correct[]" value="${opt.id}" ${opt.is_correct ? 'checked' : ''}> Correct</label>
-              </div>
-            `).join('') : ''}
+          ${q.type === 'qcm' ? `
+            <div class="qcm-options">
+              ${q.options.map(opt => `
+                <div class="option-block">
+                  <div class="option-row">
+                    <i class="fas fa-circle-dot option-icon"></i>
+                    <input type="text" name="option${opt.id}" value="${opt.option_text}" class="option-input" placeholder="Texte de l'option" />
+                    <label class="checkbox-label">
+                      <input type="checkbox" name="correct[]" value="${opt.id}" ${opt.is_correct ? 'checked' : ''} />
+                      <span><i class="fas fa-check-circle"></i> Correct</span>
+                    </label>
+                    <button type="button" class="delete-option-btn"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+              `).join('')}
+              <button type="button" class="add-option-btn"><i class="fas fa-plus"></i> Ajouter une option</button>
+            </div>
+          ` : ''}
 
-            <label>Durée :</label><br>
-            <input type="number" name="duration" value="${q.duration}"><br>
-            <label>Points :</label><br>
-            <input type="number" name="points" value="${q.points}"><br>
+          <label>Durée :</label><br>
+          <input type="number" name="duration" value="${q.duration}"><br>
+          <label>Points :</label><br>
+          <input type="number" name="points" value="${q.points}"><br>
 
-            <button type="submit">💾 Enregistrer</button>
-            <button type="button" onclick="confirmDelete(${q.id}, this)">🗑️ Supprimer</button>
-            <div class="feedback-message" style="display:none;"></div>
-          </form>
-        `;
-        questionsContainer.appendChild(div);
-      });
-
-      addFormListeners();
+          <button type="submit" class="btn save-btn"><i class="fas fa-save"></i> Enregistrer</button>
+          <button type="button" class="btn delete-btn"><i class="fas fa-trash"></i> Supprimer</button>
+          <div class="feedback-message" style="display:none;"></div>
+        </form>
+      `;
+      questionsContainer.appendChild(div);
     }
 
     function addFormListeners() {
-      const forms = questionsContainer.querySelectorAll('form');
-      forms.forEach(form => {
-        form.addEventListener('submit', async e => {
-          e.preventDefault();
-          const questionId = form.dataset.id;
-          const formData = new FormData(form);
+      questionsContainer.addEventListener('click', async e => {
+        const form = e.target.closest('form');
+        if (!form) return;
 
-          const body = {
-            statement: formData.get('statement'),
-            duration: formData.get('duration'),
-            points: formData.get('points'),
-            answer: formData.get('answer') || null,
-            tolerance: formData.get('tolerance') || null,
-            correct: formData.getAll('correct[]'),
-            options: {}
-          };
+        if (e.target.closest('.delete-btn')) confirmDelete(form);
+        if (e.target.closest('.add-option-btn')) {
+          const qcmSection = form.querySelector('.qcm-options');
+          const index = qcmSection.querySelectorAll('.option-block').length + 1;
+          const optionDiv = document.createElement('div');
+          optionDiv.className = 'option-block';
+          optionDiv.innerHTML = `
+            <div class="option-row">
+              <i class="fas fa-circle-dot option-icon"></i>
+              <input type="text" name="optionnew${index}" placeholder="Nouvelle option" class="option-input" />
+              <label class="checkbox-label">
+                <input type="checkbox" name="correct[]" value="new${index}" />
+                <span><i class="fas fa-check-circle"></i> Correct</span>
+              </label>
+              <button type="button" class="delete-option-btn"><i class="fas fa-trash"></i></button>
+            </div>`;
+          qcmSection.insertBefore(optionDiv, qcmSection.querySelector('.add-option-btn'));
+        }
 
-          form.querySelectorAll('input[type="text"][name^="option"]').forEach(input => {
-            const id = input.name.replace('option', '');
-            body.options[id] = input.value;
-          });
+        if (e.target.closest('.delete-option-btn')) {
+          e.target.closest('.option-block').remove();
+        }
+      });
 
-          const res = await fetch(`/api/questions/${questionId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-          });
+      questionsContainer.addEventListener('submit', async e => {
+        e.preventDefault();
+        const form = e.target;
+        const questionId = form.dataset.id;
+        const formData = new FormData(form);
 
-          const result = await res.json();
-          showMessage(form, result.success ? '✅ Question mise à jour.' : '❌ Erreur lors de la mise à jour.', result.success);
+        const body = {
+          statement: formData.get('statement'),
+          duration: formData.get('duration'),
+          points: formData.get('points'),
+          answer: formData.get('answer') || null,
+          tolerance: formData.get('tolerance') || null,
+          correct: formData.getAll('correct[]'),
+          options: {}
+        };
+
+        form.querySelectorAll('input[type="text"][name^="option"]').forEach(input => {
+          const id = input.name.replace('option', '');
+          body.options[id] = input.value;
         });
+
+        const res = await fetch(`/api/questions/${questionId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const result = await res.json();
+        showMessage(form, result.success ? '✅ Question mise à jour.' : '❌ Erreur lors de la mise à jour.', result.success);
       });
     }
 
-    function confirmDelete(id, btn) {
-      const form = btn.closest('form');
-      const existing = form.querySelector('.confirm-delete');
-      if (existing) return;
-
+    function confirmDelete(form) {
+      if (form.querySelector('.confirm-delete')) return;
+      const id = form.dataset.id;
       const confirmDiv = document.createElement('div');
       confirmDiv.className = 'confirm-delete';
       confirmDiv.innerHTML = `
         <span>Confirmer la suppression ?</span>
-        <button type="button" class="btn" onclick="deleteQuestion(${id}, this)">✅ Oui</button>
-        <button type="button" class="btn" onclick="this.parentElement.remove()">❌ Non</button>
-      `;
+        <button type="button" onclick="deleteQuestion(${id}, this)">✅ Oui</button>
+        <button type="button" onclick="this.parentElement.remove()">❌ Non</button>`;
       form.appendChild(confirmDiv);
     }
 
@@ -147,10 +182,9 @@
       const form = btn.closest('form');
       const res = await fetch(`/api/questions/${id}`, { method: 'DELETE' });
       const data = await res.json();
-
       if (data.success) {
         showMessage(form, '🗑️ Question supprimée avec succès.', true);
-        setTimeout(() => form.remove(), 500); // remove form after brief delay
+        setTimeout(() => form.remove(), 500);
       } else {
         showMessage(form, '❌ Erreur lors de la suppression.', false);
       }
@@ -183,10 +217,22 @@
       const message = result.success
         ? '✅ Informations de l\'examen mises à jour.'
         : '❌ Erreur lors de la mise à jour de l\'examen.';
-      alert(message);
+        const feedback = document.getElementById('examUpdateMessage');
+feedback.textContent = message;
+feedback.style.color = result.success ? 'green' : 'red';
+feedback.style.display = 'block';
+
+setTimeout(() => {
+  feedback.style.display = 'none';
+}, 4000);
+    });
+
+    document.getElementById('addNewQuestion').addEventListener('click', () => {
+      window.location.href = `/add-questions.html?examId=${examId}`;
     });
 
     loadExam();
+    addFormListeners();
   </script>
 </body>
 </html>

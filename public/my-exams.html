@@ -3,74 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <title>My Exams</title>
-  <link rel="stylesheet" href="my-exams.css" />
+  <link rel="stylesheet" href="index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body class="my-exams-page">
-  <div class="top-bar">
-    <div class="logo-container">
-      <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
+  <header class="header">
+    <div class="top-bar">
+      <div class="logo-container">
+        <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
+      </div>
+      <div class="auth-buttons">
+        <button onclick="window.location.href='/dashboard.html'" class="btn">
+          <i class="fas fa-arrow-left"></i> Dashboard
+        </button>
+        <button id="logout-btn" class="btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+        <button class="btn btn-dark-toggle" id="darkModeToggle">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
     </div>
-    <div>
-      <button onclick="window.location.href='/dashboard.html'" class="btn">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-      </button>
-      <button id="logout-btn" class="btn btn-logout">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
-    </div>
-  </div>
+  </header>
 
-  <main class="main-wrapper">
-    <h1 style="text-align:center;">My Exams</h1>
-    <div id="examList" style="max-width:800px; margin:0 auto;"></div>
+  <main class="dashboard-wrapper">
+    <h1 class="welcome-text">My Exams</h1>
+    <div id="examList" class="exam-list"></div>
   </main>
 
   <script>
     async function loadMyExams() {
-    const res = await fetch('/api/exams/mine');
-    const data = await res.json();
-    const list = document.getElementById('examList');
+      const res = await fetch('/api/exams/mine');
+      const data = await res.json();
+      const list = document.getElementById('examList');
 
-    if (data.success && data.exams.length) {
-      list.innerHTML = ''; // clear existing list
+      if (data.success && data.exams.length) {
+        list.innerHTML = '';
+        data.exams.forEach(exam => {
+          const item = document.createElement('div');
+          item.className = 'dashboard-panel exam-item';
 
-      data.exams.forEach(exam => {
-        const item = document.createElement('div');
-        item.className = 'exam-item';
-        item.style = "border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px";
+          item.innerHTML = `
+            <h2><i class="fas fa-file-alt"></i> ${exam.title}</h2>
+            <p>${exam.description}</p>
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <a href="/take-exam.html?link=${exam.link}" class="action-button">
+                <i class="fas fa-play"></i> Take
+              </a>
+              <a href="/edit-questions.html?examId=${exam.id}" class="action-button" style="background: #007bff; color: white;">
 
-        item.innerHTML = `
-          <strong>${exam.title}</strong><br>
-          ${exam.description}<br><br>
-          <a href="/take-exam.html?link=${exam.link}" class="btn" target="_blank">🎓 Take</a>
-          <a href="/add-questions.html?examId=${exam.id}" class="btn">✏️ Edit</a>
-          <button onclick="showDeleteConfirm(${exam.id}, this)" class="btn">🗑️ Delete</button>
-        `;
+                <i class="fas fa-pen"></i> Edit
+              </a>
+              <button onclick="showDeleteConfirm(${exam.id}, this)" class="action-button" style="background: #dc3545; color: white;">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+              <button onclick="copyExamLink('${exam.link}', this)" class="action-button" style="background: #6c757d; color: white;">
+                <i class="fas fa-link"></i> Copy Link
+              </button>
+            </div>
+          `;
 
-        list.appendChild(item);
-      });
-    } else {
-      list.innerHTML = '<p style="text-align:center;">No exams found.</p>';
+          list.appendChild(item);
+        });
+      } else {
+        list.innerHTML = '<p style="text-align:center; font-weight: 600;">No exams found.</p>';
+      }
     }
-  }
 
-  function showDeleteConfirm(id, btn) {
-    // prevent multiple confirms
-    if (btn.nextElementSibling?.classList.contains('confirm-delete')) return;
+    function showDeleteConfirm(id, btn) {
+  // ✅ Remove any previous confirm box
+  document.querySelectorAll('.confirm-delete').forEach(el => el.remove());
 
-    const confirmBox = document.createElement('div');
-    confirmBox.className = 'confirm-delete';
-    confirmBox.innerHTML = `
-      <p>Supprimer cet examen ?</p>
-      <button onclick="confirmDelete(${id}, this)">✅ Confirmer</button>
-    `;
-    btn.insertAdjacentElement('afterend', confirmBox);
-  }
+  const confirmBox = document.createElement('div');
+  confirmBox.className = 'confirm-delete';
+  confirmBox.innerHTML = `
+    <p style="margin: 0.5rem 0; font-weight: bold;">Supprimer cet examen ?</p>
+    <button onclick="confirmDelete(${id}, this)" style="background: #dc3545; color: white; padding: 0.4rem 0.8rem; border: none; border-radius: 6px; cursor: pointer;">✅ Confirmer</button>
+  `;
 
-  async function confirmDelete(id, confirmBtn) {
-    const container = confirmBtn.closest('.exam-item');
+  // Append below the whole exam card to avoid layout shifts
+  btn.closest('.exam-item').appendChild(confirmBox);
+  setTimeout(() => {
+  if (confirmBox.parentElement) confirmBox.remove();
+}, 7000);
+}
+
+
+    async function confirmDelete(id, confirmBtn) {
+  const container = confirmBtn.closest('.exam-item');
+  try {
     const res = await fetch(`/api/exams/${id}`, { method: 'DELETE' });
     const data = await res.json();
 
@@ -80,17 +102,41 @@
     container.appendChild(msg);
 
     if (data.success) {
-      setTimeout(() => container.remove(), 2000);
+      setTimeout(() => container.remove(), 1500);
     } else {
       setTimeout(() => msg.remove(), 5000);
     }
+  } catch (err) {
+    console.error('❌ Delete request failed:', err);
+    alert("Erreur réseau ou serveur.");
   }
+}
 
-  document.getElementById('logout-btn').addEventListener('click', () => {
-    window.location.href = '/logout';
-  });
+    
 
-  loadMyExams();
+function copyExamLink(link, btn) {
+  navigator.clipboard.writeText(link)
+    .then(() => {
+      btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-link"></i> Copy Link';
+      }, 2000);
+    });
+}
+
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      window.location.href = '/logout';
+    });
+
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const icon = document.querySelector('#darkModeToggle i');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
+    });
+
+    loadMyExams();
   </script>
 </body>
 </html>

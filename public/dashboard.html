@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Quizzy Dashboard</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 
 <body class="dashboard-page">
   <header class="header">
     <div class="top-bar">
       <div class="logo-container">
-        <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
+        <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo" /></a>
       </div>
-      <div>
+      <div class="auth-buttons">
         <a href="/my-exams.html" class="btn"><i class="fas fa-list"></i> My Exams</a>
-        <button class="btn btn-logout" id="logout-btn">
-          <i class="fas fa-sign-out-alt"></i> Logout
+        <button class="btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button class="btn-dark-toggle" onclick="document.body.classList.toggle('dark')">
+          <i class="fas fa-moon"></i>
         </button>
       </div>
     </div>
@@ -27,7 +28,7 @@
     <h1 class="welcome-text">Welcome back, <span id="userName" class="username"></span> 👋</h1>
 
     <div class="dashboard-split">
-      <!-- Left side - Create Exam -->
+      <!-- Create Exam -->
       <section class="dashboard-panel">
         <h2>Create an Exam</h2>
         <p>You can create a new exam and configure its settings.</p>
@@ -36,7 +37,7 @@
         </button>
       </section>
 
-      <!-- Right side - Take Exam -->
+      <!-- Take Exam -->
       <section class="dashboard-panel">
         <h2>Take an Exam</h2>
         <p>Enter your exam link below to begin:</p>
@@ -51,7 +52,6 @@
   </main>
 
   <script>
-    // Fetch user info
     fetch('/api/user')
       .then(res => res.json())
       .then(data => {
@@ -59,7 +59,6 @@
       })
       .catch(() => window.location.href = '/login.html');
 
-    // Logout handler
     document.getElementById('logout-btn').addEventListener('click', () => {
       window.location.href = '/logout';
     });

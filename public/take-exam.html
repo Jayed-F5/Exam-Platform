@@ -4,14 +4,21 @@
   <meta charset="UTF-8" />
   <title>Passer l'examen</title>
   <link rel="stylesheet" href="styleTakeExam.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<style>
+
+</style>
 <body class="take-exam-page">
+
+
   <div class="exam-container">
     <h1 id="examTitle">Chargement de l'examen...</h1>
     <div id="questionArea"></div>
     <div id="timer" style="font-weight: bold; margin-top: 10px;"></div>
     <button id="submitBtn" class="submit-button" style="display: none;">Soumettre la réponse</button>
-    <div id="resultMessage" class="result-message"></div>
+    <div id="resultMessage" class="result-message">
+    </div>
   </div>
 
   <script>
@@ -30,7 +37,6 @@
     let currentQuestion = null;
     let userLocation = null;
 
-    // Étape 1 : demander la géolocalisation
     async function askGeolocation() {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
@@ -54,7 +60,6 @@
       });
     }
 
-    // Chargement de l’examen après géolocalisation
     async function loadExam() {
       try {
         const res = await fetch(`/api/exams/by-code/${examLink}`);
@@ -100,7 +105,6 @@
           mediaEl = document.createElement('img');
           mediaEl.src = q.media;
           mediaEl.alt = "Image";
-          mediaEl.style.maxWidth = "100%";
           mediaEl.style.marginTop = "10px";
         } else if (['mp3', 'wav', 'ogg'].includes(ext)) {
           mediaEl = document.createElement('audio');
@@ -185,7 +189,7 @@
         body: JSON.stringify({
           link: examLink,
           answers,
-          location: userLocation // 🛰️ envoyé au backend
+          location: userLocation
         })
       });
 
@@ -199,8 +203,6 @@
         resultDiv.style.color = 'red';
       }
     }
-
-    // ✅ Démarrage après géolocalisation
     askGeolocation()
       .then(() => loadExam())
       .catch(() => {

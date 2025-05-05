@@ -5,13 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quizzy - Inscription</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="index.css">
 </head>
-<body>
+<body class="signup-page">
   <header class="header">
     <div class="top-bar">
       <div class="logo-container">
         <a href="/"><img src="logo(1).png" alt="Quizzy Logo" class="logo"></a>
+      </div>
+      <div class="auth-buttons">
+        <button class="btn-dark-toggle" onclick="toggleDarkMode()">
+          <i class="fas fa-moon"></i>
+        </button>
       </div>
     </div>
   </header>
@@ -19,8 +24,6 @@
   <main class="signup-container">
     <h1>Create your account</h1>
     <form class="signup-form" action="/signup" method="POST">
-      
-
       <div class="form-group">
         <label for="email">Email <span class="required">*</span></label>
         <input type="email" id="email" name="email" required>
@@ -44,14 +47,8 @@
       <div class="form-group">
         <label>Gender <span class="required">*</span></label>
         <div class="radio-group">
-          <label>
-            <input type="radio" name="gender" value="male" required>
-            Male
-          </label>
-          <label>
-            <input type="radio" name="gender" value="female">
-            Female
-          </label>
+          <label><input type="radio" name="gender" value="male" required> Male</label>
+          <label><input type="radio" name="gender" value="female"> Female</label>
         </div>
       </div>
 
@@ -67,12 +64,10 @@
 
       <div class="form-group">
         <label for="password">Password <span class="required">*</span></label>
-        <input type="password" id="password" name="password" required 
-               pattern=".{8,}" title="8 caractères minimum"
-               class="password-field">
+        <input type="password" id="password" name="password" required pattern=".{8,}" title="8 characters minimum" class="password-field">
         <div class="password-strength"></div>
       </div>
-      
+
       <div class="form-group">
         <label for="confirm-password">Verify your password <span class="required">*</span></label>
         <input type="password" id="confirm-password" name="confirm_password" required>
@@ -81,22 +76,26 @@
 
       <button type="submit" class="btn btn-primary">Signup</button>
     </form>
+
     <div id="message-box" class="message-box"></div>
-
-    <script>
-      const messageBox = document.getElementById('message-box');
-      const params = new URLSearchParams(window.location.search);
-
-      if (params.has('error')) {
-       messageBox.textContent = decodeURIComponent(params.get('error'));
-       messageBox.style.color = 'red';
-      } else if (params.has('success')) {
-        messageBox.textContent = decodeURIComponent(params.get('success'));
-        messageBox.style.color = 'green';
-      }
-    </script>
 
     <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
   </main>
+
+  <script>
+    const messageBox = document.getElementById('message-box');
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('error')) {
+      messageBox.textContent = decodeURIComponent(params.get('error'));
+      messageBox.style.color = 'red';
+    } else if (params.has('success')) {
+      messageBox.textContent = decodeURIComponent(params.get('success'));
+      messageBox.style.color = 'green';
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+  </script>
 </body>
 </html>

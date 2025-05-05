@@ -3,9 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Ajouter des Questions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styleAddQuestions.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="add-questions-page">
+
+  <div class="top-controls">
+    <button onclick="window.location.href='/dashboard.html'" class="back-button">
+      <i class="fas fa-arrow-left"></i> Retour au dashboard
+    </button>
+    <button id="theme-toggle" class="theme-toggle">
+      <i id="theme-icon" class="fas fa-moon"></i>
+    </button>
+  </div>
 
   <div class="form-container">
     <h1>Ajouter des Questions</h1>
@@ -13,51 +24,70 @@
     <form id="questionForm" class="styled-form" enctype="multipart/form-data">
       <input type="hidden" name="exam_id" id="examId">
 
-      <label for="questionTypeSelect">Type de question :</label>
-      <select name="type" id="questionTypeSelect" required>
-        <option value="">-- Choisir le type --</option>
-        <option value="qcm">QCM</option>
-        <option value="direct">Directe</option>
-      </select>
+      <div class="form-group">
+        <label for="questionTypeSelect">Type de question :</label>
+        <select name="type" id="questionTypeSelect" required>
+          <option value="">-- Choisir le type --</option>
+          <option value="qcm">QCM</option>
+          <option value="direct">Directe</option>
+        </select>
+      </div>
 
-      <label for="statement">Énoncé de la question :</label>
-      <textarea name="statement" id="statement" required></textarea>
+      <div class="form-group">
+        <label for="statement">Énoncé de la question :</label>
+        <textarea name="statement" id="statement" required></textarea>
+      </div>
 
       <div id="qcmFields" style="display: none;">
         <label>Options :</label>
         <div id="qcmOptionsContainer"></div>
-        <button type="button" id="addOptionBtn" class="submit-button" style="margin-top: 15px; background-color: #6c757d;">
+        <button type="button" id="addOptionBtn" class="submit-button gray-button">
           Ajouter une option
         </button>
       </div>
 
       <div id="directFields" style="display: none;">
-        <label for="answer">Réponse correcte :</label>
-        <input type="text" name="answer" id="answer">
+        <div class="form-group">
+          <label for="answer">Réponse correcte :</label>
+          <input type="text" name="answer" id="answer">
+        </div>
 
-        <label for="tolerance">Tolérance (%) :</label>
-        <input type="number" name="tolerance" id="tolerance" min="0" max="100" step="1" />
+        <div class="form-group">
+          <label for="tolerance">Tolérance (%) :</label>
+          <input type="number" name="tolerance" id="tolerance" min="0" max="100" step="1" />
+        </div>
       </div>
 
-      <label for="points">Points :</label>
-      <input type="number" name="points" id="points" required>
+      <div class="form-group">
+        <label for="points">Points :</label>
+        <input type="number" name="points" id="points" required>
+      </div>
 
-      <label for="duration">Durée (secondes) :</label>
-      <input type="number" name="duration" id="duration" required>
+      <div class="form-group">
+        <label for="duration">Durée (secondes) :</label>
+        <input type="number" name="duration" id="duration" required>
+      </div>
 
-      <label for="media">Média (image, audio ou vidéo) :</label>
-      <input type="file" name="media" id="media" accept="image/*,audio/*,video/*" class="input-field">
+      <div class="form-group">
+        <label for="media">Média (image, audio ou vidéo) :</label>
+        <input type="file" name="media" id="media" accept="image/*,audio/*,video/*" class="input-field">
+      </div>
 
       <button type="submit" class="submit-button">Ajouter la Question</button>
     </form>
 
-    <div id="successMessage" style="display: none; margin-top: 20px;">
+    <button id="finishExam" class="submit-button" style="background: green; margin-top: 20px;">
+      Terminer et Générer le Lien
+    </button>
+    
+    <!-- Message déplacé ici -->
+    <div id="successMessage" style="display: none; margin-top: 15px; font-weight: bold; color: green;">
       ✅ Question ajoutée avec succès !
     </div>
-
-    <button id="finishExam" class="submit-button" style="background: green; margin-top: 20px;">Terminer et Générer le Lien</button>
-    <div id="generatedLink" style="margin-top: 20px; text-align: center; font-weight: bold;"></div>
+    
+    <div id="generatedLink" class="generated-link"></div>
   </div>
+
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -193,12 +223,16 @@ wrapper.appendChild(label);
         const code = result.link;
         const linkDiv = document.getElementById('generatedLink');
         linkDiv.innerHTML = `
-          Code de l'examen : <span id="examCode">${code}</span><br>
-          <button id="copyCodeBtn" class="submit-button" style="background: orange; margin-top: 10px;">
-            Copier le code
-          </button>
-          <div id="copyFeedback" style="color: green; font-weight: bold; margin-top: 10px;"></div>
-        `;
+  <div class="exam-code-box">
+    <p class="exam-code-label">Code de l'examen :</p>
+    <div class="exam-code-value">${code}</div>
+    <button id="copyCodeBtn" class="submit-button orange-btn">
+      Copier le code
+    </button>
+    <div id="copyFeedback" class="copy-feedback"></div>
+  </div>
+`;
+
 
         document.getElementById('copyCodeBtn').addEventListener('click', () => {
           navigator.clipboard.writeText(code).then(() => {
@@ -208,6 +242,13 @@ wrapper.appendChild(label);
           });
         });
       }
+    });
+    const toggleBtn = document.getElementById("theme-toggle");
+    const icon = document.getElementById("theme-icon");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      icon.classList.toggle("fa-moon");
+      icon.classList.toggle("fa-sun");
     });
   </script>
 </body>
