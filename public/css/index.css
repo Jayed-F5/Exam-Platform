@@ -25,7 +25,6 @@ body {
     text-decoration: none;
   }
   
-  /* Header */
   .header {
     background-color: var(--light-bg);
     color: var(--light-text);
@@ -34,7 +33,6 @@ body {
     box-shadow: var(--shadow);
   }
 
-  /* Limit size adjustments to buttons inside the header only */
 .header .auth-buttons .btn,
 .header .auth-buttons button.btn {
   min-width: 120px;
@@ -95,7 +93,7 @@ body {
   }
 
   .auth-buttons .btn {
-    min-width: 110px; /* Adjust as needed */
+    min-width: 110px; 
     justify-content: center;
     text-align: center;
   }
@@ -123,7 +121,6 @@ body {
   background-color: var(--accent-color);
   color: var(--dark-bg);
 }
-  /* Hero */
   .hero {
     background: linear-gradient(to right, #dee9f7, #f0f4fa);
     color: var(--light-text);
@@ -157,7 +154,6 @@ body {
     transform: scale(1.05);
   }
   
-  /* Features */
   .features h2 {
     text-align: center;
     margin-bottom: 2rem;
@@ -192,7 +188,6 @@ body {
     margin-bottom: 1rem;
   }
   
-  /* How It Works */
   .how-it-works h2 {
     text-align: center;
     margin-bottom: 2rem;
@@ -240,7 +235,6 @@ body {
     margin: 0.5rem 0 0;
   }
   
-  /* Dark Mode */
   body.dark {
     background: url('/backgdark.png') center/cover no-repeat;
     background-attachment: fixed;
@@ -289,7 +283,6 @@ body {
     color: white;
   }
   
-  /* Responsive */
   @media (max-width: 768px) {
     .hero h2 {
       font-size: 2rem;
@@ -353,7 +346,6 @@ body {
     }
   }
   
-  /* Light mode hero */
   body:not(.dark) .hero {
     background: url('/backgroundimg.png') center/cover no-repeat;
     color: var(--light-text);
@@ -386,12 +378,11 @@ body {
     cursor: pointer;
     margin-top: 1rem;
     display: flex;
-    justify-content: center; /* Horizontally center text */
-    align-items: center;     /* Vertically center text */
+    justify-content: center; 
+    align-items: center;     
     text-align: center;
   }
   
-  /* Signup Form */
   .signup-container {
     max-width: 500px;
     margin: 4rem auto;
@@ -481,7 +472,6 @@ body {
     color: var(--dark-text);
   }
 
-  /* Dashboard Page Styles */
   body.dashboard-page {
     background: url('/backgroundimg.png') center/cover no-repeat;
     background-attachment: fixed;
@@ -567,7 +557,6 @@ body {
   }
   
 
-  /* === My Exams Page Custom === */
 body.my-exams-page {
   background: url('/backgroundimg.png') center/cover no-repeat;
   background-attachment: fixed;
@@ -633,7 +622,6 @@ body.dark.my-exams-page {
   font-weight: bold;
 }
 
-/* Exam Cards */
 .exam-list {
   display: flex;
   flex-direction: column;
@@ -677,7 +665,6 @@ body.dark.my-exams-page {
   color: #721c24;
 }
 
-/* Dark Mode Enhancements */
 body.dark .exam-item p {
   color: var(--dark-text);
 }
@@ -693,7 +680,6 @@ body.dark .error-message {
 }
 
 
-  /* === Edit Questions Page === */
 
 body.edit-questions-page {
   background: url('/backgroundimg.png') center/cover no-repeat;
@@ -847,9 +833,6 @@ body.dark .question-block {
   font-weight: 500;
 }
 
-/* Existing index.css styles... */
-
-/* === Improved Option Styling for Edit Questions === */
 .option-block {
   margin-bottom: 12px;
 }
@@ -912,7 +895,6 @@ body.dark .question-block {
   transform: scale(1.1);
 }
 
-/* Dark mode compatibility */
 body.dark .option-row {
   background-color: #2b2b3d;
   border-color: #444;
@@ -977,7 +959,7 @@ button[type="button"] {
   background-color: #6c757d;
   color: white;
 }
-/* Bouton supprimer plus discret */
+
 button.delete-option {
   background: #e74c3c;
   color: white;
@@ -999,7 +981,6 @@ button.delete-option:hover {
 
 
 
-/* Confirmation suppression */
 .confirm-delete {
   margin-top: 0.5rem;
   display: flex;
@@ -1010,4 +991,9 @@ button.delete-option:hover {
 .feedback-message {
   margin-top: 10px;
   font-weight: bold;
+}
+
+.username {
+  text-transform: uppercase;
+  font-weight: 600; 
 }

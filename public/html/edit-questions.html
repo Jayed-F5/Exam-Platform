@@ -1,40 +1,42 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en"></html>
 <head>
   <meta charset="UTF-8" />
-  <title>Modifier l'Examen</title>
-  <link rel="stylesheet" href="index.css" />
+  <title>Edit Exam</title>
+  <link rel="stylesheet" href="../css/index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="edit-questions-page">
   <div class="container">
-    <h1>Modifier l'Examen</h1>
+    <h1>Edit Exam</h1>
 
     <form id="examInfoForm" style="margin-bottom: 40px;">
-      <label>Titre :</label><br>
+      <label>Title:</label><br>
       <input type="text" id="examTitle" name="title"><br>
     
-      <label>Description :</label><br>
+      <label>Description:</label><br>
       <textarea id="examDescription" name="description"></textarea><br>
     
-      <label>Public ciblé :</label><br>
+      <label>Target Audience:</label><br>
       <input type="text" id="examTarget" name="target_group"><br>
     
-      <button type="submit" class="btn"><i class="fas fa-save"></i> Mettre à jour l'examen</button>
+      <button type="submit" class="btn"><i class="fas fa-save"></i> Update Exam</button>
       <div id="examUpdateMessage" class="feedback-message" style="display:none;"></div>
     </form>
     
 
-    <h2>Questions existantes</h2>
+    <h2>Existing Questions</h2>
     <div id="questionsContainer"></div>
 
-    <button id="addNewQuestion" class="btn"><i class="fas fa-plus"></i> Ajouter une nouvelle question</button>
+    <button id="addNewQuestion" class="btn"><i class="fas fa-plus"></i> Add New Question</button>
   </div>
 
   <script>
+    // Get the examId from the URL query parameters
     const examId = new URLSearchParams(window.location.search).get('examId');
     const questionsContainer = document.getElementById('questionsContainer');
 
+    // Load exam details and questions
     async function loadExam() {
       const res = await fetch('/api/exams/get', {
         method: 'POST',
@@ -46,30 +48,33 @@
       questionsContainer.innerHTML = '';
 
       if (!data.success || !data.exam) {
-        questionsContainer.innerHTML = '<div class="error-message">Erreur de chargement de l\'examen.</div>';
+        questionsContainer.innerHTML = '<div class="error-message">Error loading the exam.</div>';
         return;
       }
 
+      // Populate exam information fields
       document.getElementById('examTitle').value = data.exam.title || '';
       document.getElementById('examDescription').value = data.exam.description || '';
       document.getElementById('examTarget').value = data.exam.target_group || '';
 
+      // Render each question
       data.exam.questions.forEach(renderQuestion);
     }
 
+    // Render a single question block
     function renderQuestion(q) {
       const div = document.createElement('div');
       div.className = 'question-block';
       div.innerHTML = `
         <form data-id="${q.id}">
           <h3>Question #${q.id} (${q.type})</h3>
-          <label>Énoncé :</label><br>
+          <label>Statement:</label><br>
           <textarea name="statement">${q.statement}</textarea><br>
 
           ${q.type === 'direct' ? `
-            <label>Réponse :</label><br>
+            <label>Answer:</label><br>
             <input type="text" name="answer" value="${q.answer || ''}"><br>
-            <label>Tolérance :</label><br>
+            <label>Tolerance:</label><br>
             <input type="number" name="tolerance" value="${q.tolerance || 0}"><br>
           ` : ''}
 
@@ -79,7 +84,7 @@
                 <div class="option-block">
                   <div class="option-row">
                     <i class="fas fa-circle-dot option-icon"></i>
-                    <input type="text" name="option${opt.id}" value="${opt.option_text}" class="option-input" placeholder="Texte de l'option" />
+                    <input type="text" name="option${opt.id}" value="${opt.option_text}" class="option-input" placeholder="Option Text" />
                     <label class="checkbox-label">
                       <input type="checkbox" name="correct[]" value="${opt.id}" ${opt.is_correct ? 'checked' : ''} />
                       <span><i class="fas fa-check-circle"></i> Correct</span>
@@ -88,23 +93,24 @@
                   </div>
                 </div>
               `).join('')}
-              <button type="button" class="add-option-btn"><i class="fas fa-plus"></i> Ajouter une option</button>
+              <button type="button" class="add-option-btn"><i class="fas fa-plus"></i> Add Option</button>
             </div>
           ` : ''}
 
-          <label>Durée :</label><br>
+          <label>Duration:</label><br>
           <input type="number" name="duration" value="${q.duration}"><br>
-          <label>Points :</label><br>
+          <label>Points:</label><br>
           <input type="number" name="points" value="${q.points}"><br>
 
-          <button type="submit" class="btn save-btn"><i class="fas fa-save"></i> Enregistrer</button>
-          <button type="button" class="btn delete-btn"><i class="fas fa-trash"></i> Supprimer</button>
+          <button type="submit" class="btn save-btn"><i class="fas fa-save"></i> Save</button>
+          <button type="button" class="btn delete-btn"><i class="fas fa-trash"></i> Delete</button>
           <div class="feedback-message" style="display:none;"></div>
         </form>
       `;
       questionsContainer.appendChild(div);
     }
 
+    // Add event listeners for form actions
     function addFormListeners() {
       questionsContainer.addEventListener('click', async e => {
         const form = e.target.closest('form');
@@ -119,7 +125,7 @@
           optionDiv.innerHTML = `
             <div class="option-row">
               <i class="fas fa-circle-dot option-icon"></i>
-              <input type="text" name="optionnew${index}" placeholder="Nouvelle option" class="option-input" />
+              <input type="text" name="optionnew${index}" placeholder="New Option" class="option-input" />
               <label class="checkbox-label">
                 <input type="checkbox" name="correct[]" value="new${index}" />
                 <span><i class="fas fa-check-circle"></i> Correct</span>
@@ -162,34 +168,37 @@
         });
 
         const result = await res.json();
-        showMessage(form, result.success ? '✅ Question mise à jour.' : '❌ Erreur lors de la mise à jour.', result.success);
+        showMessage(form, result.success ? 'Question updated.' : 'Error updating question.', result.success);
       });
     }
 
+    // Confirm deletion of a question
     function confirmDelete(form) {
       if (form.querySelector('.confirm-delete')) return;
       const id = form.dataset.id;
       const confirmDiv = document.createElement('div');
       confirmDiv.className = 'confirm-delete';
       confirmDiv.innerHTML = `
-        <span>Confirmer la suppression ?</span>
-        <button type="button" onclick="deleteQuestion(${id}, this)">✅ Oui</button>
-        <button type="button" onclick="this.parentElement.remove()">❌ Non</button>`;
+        <span>Confirm deletion?</span>
+        <button type="button" onclick="deleteQuestion(${id}, this)">Yes</button>
+        <button type="button" onclick="this.parentElement.remove()">No</button>`;
       form.appendChild(confirmDiv);
     }
 
+    // Delete a question
     async function deleteQuestion(id, btn) {
       const form = btn.closest('form');
       const res = await fetch(`/api/questions/${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
-        showMessage(form, '🗑️ Question supprimée avec succès.', true);
+        showMessage(form, 'Question successfully deleted.', true);
         setTimeout(() => form.remove(), 500);
       } else {
-        showMessage(form, '❌ Erreur lors de la suppression.', false);
+        showMessage(form, 'Error deleting question.', false);
       }
     }
 
+    // Show feedback message
     function showMessage(form, msg, success = true) {
       const box = form.querySelector('.feedback-message');
       box.textContent = msg;
@@ -201,6 +210,7 @@
       }, 5000);
     }
 
+    // Update exam information
     document.getElementById('examInfoForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('examTitle').value;
@@ -215,24 +225,50 @@
 
       const result = await res.json();
       const message = result.success
-        ? '✅ Informations de l\'examen mises à jour.'
-        : '❌ Erreur lors de la mise à jour de l\'examen.';
-        const feedback = document.getElementById('examUpdateMessage');
-feedback.textContent = message;
-feedback.style.color = result.success ? 'green' : 'red';
-feedback.style.display = 'block';
+        ? 'Exam information updated.'
+        : 'Error updating exam information.';
+      const feedback = document.getElementById('examUpdateMessage');
+      feedback.textContent = message;
+      feedback.style.color = result.success ? 'green' : 'red';
+      feedback.style.display = 'block';
 
-setTimeout(() => {
-  feedback.style.display = 'none';
-}, 4000);
+      setTimeout(() => {
+        feedback.style.display = 'none';
+      }, 4000);
     });
 
+    // Redirect to add new question page
     document.getElementById('addNewQuestion').addEventListener('click', () => {
       window.location.href = `/add-questions.html?examId=${examId}`;
     });
 
+    // Load exam data and add event listeners
     loadExam();
     addFormListeners();
+
+    // Theme toggle functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('theme-toggle');
+      const icon = document.getElementById('theme-icon');
+
+      // Load saved theme
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+
+      // Toggle and save theme preference
+      toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+
+        icon.classList.toggle('fa-sun', isDark);
+        icon.classList.toggle('fa-moon', !isDark);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    });
   </script>
 </body>
 </html>

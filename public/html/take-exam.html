@@ -1,27 +1,31 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Passer l'examen</title>
-  <link rel="stylesheet" href="styleTakeExam.css" />
+  <title>Take the Exam</title>
+  <link rel="stylesheet" href="../css/styleTakeExam.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    // Apply saved theme before rendering the page
+    (function() {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
 </head>
-<style>
-
-</style>
 <body class="take-exam-page">
-
-
   <div class="exam-container">
-    <h1 id="examTitle">Chargement de l'examen...</h1>
+    <h1 id="examTitle">Loading the exam...</h1>
     <div id="questionArea"></div>
     <div id="timer" style="font-weight: bold; margin-top: 10px;"></div>
-    <button id="submitBtn" class="submit-button" style="display: none;">Soumettre la réponse</button>
-    <div id="resultMessage" class="result-message">
-    </div>
+    <button id="submitBtn" class="submit-button" style="display: none;">Submit Answer</button>
+    <div id="resultMessage" class="result-message"></div>
   </div>
 
   <script>
+    // Extract URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const examLink = urlParams.get('examCode');
     const examTitle = document.getElementById('examTitle');
@@ -37,11 +41,12 @@
     let currentQuestion = null;
     let userLocation = null;
 
+    // Request user's geolocation
     async function askGeolocation() {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
-          alert("La géolocalisation n'est pas supportée par ce navigateur.");
-          reject("Non supporté");
+          alert("Geolocation is not supported by this browser.");
+          reject("Not supported");
         } else {
           navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -52,7 +57,7 @@
               resolve();
             },
             (error) => {
-              alert("⚠️ Géolocalisation refusée. Vous ne pouvez pas continuer l'examen.");
+              alert("Geolocation denied. You cannot proceed with the exam.");
               reject(error);
             }
           );
@@ -60,13 +65,14 @@
       });
     }
 
+    // Load exam data from the server
     async function loadExam() {
       try {
         const res = await fetch(`/api/exams/by-code/${examLink}`);
         const data = await res.json();
 
         if (!data.success || !data.exam || !data.exam.questions) {
-          examTitle.textContent = "Examen introuvable.";
+          examTitle.textContent = "Exam not found.";
           return;
         }
 
@@ -74,11 +80,12 @@
         examTitle.textContent = examData.title;
         showQuestion();
       } catch (err) {
-        console.error("Erreur de chargement :", err);
-        examTitle.textContent = "Erreur lors du chargement de l'examen.";
+        console.error("Loading error:", err);
+        examTitle.textContent = "Error loading the exam.";
       }
     }
 
+    // Display the current question
     function showQuestion() {
       if (currentIndex >= examData.questions.length) {
         submitExam();
@@ -145,12 +152,13 @@
       startTimer(q.duration || 30);
     }
 
+    // Start the timer for the current question
     function startTimer(seconds) {
       let remaining = seconds;
-      timerEl.textContent = `Temps restant : ${remaining} secondes`;
+      timerEl.textContent = `Time remaining: ${remaining} seconds`;
       currentTimer = setInterval(() => {
         remaining--;
-        timerEl.textContent = `Temps restant : ${remaining} secondes`;
+        timerEl.textContent = `Time remaining: ${remaining} seconds`;
         if (remaining <= 0) {
           clearInterval(currentTimer);
           submitCurrentAnswer();
@@ -158,11 +166,13 @@
       }, 1000);
     }
 
+    // Handle the submit button click
     submitBtn.addEventListener('click', () => {
       clearInterval(currentTimer);
       submitCurrentAnswer();
     });
 
+    // Submit the current answer and move to the next question
     function submitCurrentAnswer() {
       const inputs = document.querySelectorAll(`input[name="q${currentQuestion.id}"]`);
       const collected = [];
@@ -178,6 +188,7 @@
       showQuestion();
     }
 
+    // Submit the entire exam
     async function submitExam() {
       questionArea.innerHTML = '';
       timerEl.innerHTML = '';
@@ -196,17 +207,23 @@
       const result = await res.json();
       if (result.success) {
         const score100 = Math.round((result.score / result.total) * 100);
-        resultDiv.innerHTML = `<strong>Score :</strong> ${score100} / 100`;
+        resultDiv.innerHTML = `<strong>Score:</strong> ${score100} / 100`;
         resultDiv.style.color = 'green';
+
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 6000);
       } else {
-        resultDiv.textContent = 'Erreur lors de la soumission.';
+        resultDiv.textContent = 'Error submitting the exam.';
         resultDiv.style.color = 'red';
       }
     }
+
+    // Initialize the exam process
     askGeolocation()
       .then(() => loadExam())
       .catch(() => {
-        examTitle.textContent = "⚠️ Géolocalisation requise pour commencer l'examen.";
+        examTitle.textContent = "Geolocation is required to start the exam.";
         questionArea.innerHTML = '';
       });
   </script>

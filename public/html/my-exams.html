@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>My Exams</title>
-  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="../css/index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -48,9 +48,9 @@
             <h2><i class="fas fa-file-alt"></i> ${exam.title}</h2>
             <p>${exam.description}</p>
             <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-              <a href="/take-exam.html?link=${exam.link}" class="action-button">
-                <i class="fas fa-play"></i> Take
-              </a>
+              <a href="/take-exam.html?examCode=${exam.link}" class="action-button">
+  <i class="fas fa-play"></i> Take
+</a>
               <a href="/edit-questions.html?examId=${exam.id}" class="action-button" style="background: #007bff; color: white;">
 
                 <i class="fas fa-pen"></i> Edit
@@ -129,12 +129,25 @@ function copyExamLink(link, btn) {
       window.location.href = '/logout';
     });
 
-    document.getElementById('darkModeToggle').addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      const icon = document.querySelector('#darkModeToggle i');
-      icon.classList.toggle('fa-moon');
-      icon.classList.toggle('fa-sun');
-    });
+    // Apply saved theme on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  const icon = document.querySelector('#darkModeToggle i');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark');
+    icon.classList.remove('fa-moon');
+    icon.classList.add('fa-sun');
+  }
+});
+
+// Toggle and save preference
+document.getElementById('darkModeToggle').addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark');
+  const icon = document.querySelector('#darkModeToggle i');
+  icon.classList.toggle('fa-moon', !isDark);
+  icon.classList.toggle('fa-sun', isDark);
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
 
     loadMyExams();
   </script>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create an Exam</title>
+  <link rel="stylesheet" href="../css/styleCreateExam.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="create-exam-page">
+
+  <a href="dashboard.html" class="back-button"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+  <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div class="form-container">
+    <h1 class="form-title">Create an Exam</h1>
+
+    <form id="examForm" class="styled-form">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" class="input-field" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" class="input-field" rows="4" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="target_group">Target Audience</label>
+        <input type="text" id="target_group" name="target_group" class="input-field" required>
+      </div>
+
+      <button type="submit" class="submit-button">Create Exam</button>
+    </form>
+
+    <div id="linkContainer" class="result-message"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('theme-toggle');
+      const icon = toggleBtn.querySelector('i');
+
+      // Load saved theme from localStorage
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+
+      // Toggle theme and save new preference to localStorage
+      toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+
+        // Update the icon based on the theme
+        icon.classList.toggle('fa-moon', !isDark);
+        icon.classList.toggle('fa-sun', isDark);
+
+        // Save the theme preference
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    });
+
+    // Handle form submission for creating an exam
+    document.getElementById('examForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      // Get form input values
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const target_group = document.getElementById('target_group').value.trim();
+
+      // Validate form inputs
+      if (!title || !description || !target_group) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      try {
+        // Send form data to the server
+        const res = await fetch('/api/exams/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, target_group })
+        });
+
+        const result = await res.json();
+
+        // Handle server response
+        if (result.success) {
+          const examId = result.examId;
+
+          // Redirect to add questions page with the exam ID
+          window.location.href = `add-questions.html?examId=${examId}`;
+        } else {
+          alert("Error creating the exam.");
+        }
+      } catch (err) {
+        // Handle network or server errors
+        console.error("Network error:", err);
+        alert("An error occurred.");
+      }
+    });
+  </script>
+  
+</body>
+</html>

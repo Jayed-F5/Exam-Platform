@@ -2,7 +2,7 @@ const path = require('path');
 
 exports.showDashboard = (req, res) => {
   if (req.session && req.session.user) {
-    res.sendFile(path.join(__dirname, '../../public/dashboard.html'));
+    res.sendFile(path.join(__dirname, '../../public/html/dashboard.html'));
   } else {
     res.redirect('/login.html');
   }

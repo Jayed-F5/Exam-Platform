@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quizzy - Inscription</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../css/index.css">
 </head>
 <body class="signup-page">
   <header class="header">
@@ -85,6 +85,8 @@
   <script>
     const messageBox = document.getElementById('message-box');
     const params = new URLSearchParams(window.location.search);
+
+    // Display error or success messages based on URL parameters
     if (params.has('error')) {
       messageBox.textContent = decodeURIComponent(params.get('error'));
       messageBox.style.color = 'red';
@@ -93,9 +95,29 @@
       messageBox.style.color = 'green';
     }
 
+    const darkToggleBtn = document.querySelector('.btn-dark-toggle');
+    const icon = darkToggleBtn.querySelector('i');
+
+    // Load saved theme from localStorage on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+    });
+
+    // Toggle dark mode and save the preference in localStorage
     function toggleDarkMode() {
-      document.body.classList.toggle("dark");
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+      icon.classList.toggle('fa-sun', isDark);
+      icon.classList.toggle('fa-moon', !isDark);
     }
   </script>
+  
 </body>
 </html>

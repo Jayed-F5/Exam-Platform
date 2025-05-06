@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quizzy - Login</title>
-  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="../css/index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
   <style>
-    /* Additional login-specific styles */
     .login-container {
       max-width: 400px;
       margin: 4rem auto;
@@ -75,7 +74,6 @@
       font-weight: 600;
     }
 
-    /* Dark mode overrides */
     body.dark .login-container {
       background-color: var(--dark-card-bg);
       color: var(--dark-text);
@@ -128,6 +126,7 @@
     const messageBox = document.getElementById("message-box");
     const params = new URLSearchParams(window.location.search);
 
+    // Display error or success message based on URL parameters
     if (params.has("error")) {
       messageBox.textContent = decodeURIComponent(params.get("error"));
       messageBox.style.color = "red";
@@ -136,9 +135,27 @@
       messageBox.style.color = "green";
     }
 
-    // Dark mode toggle
+    const darkToggleBtn = document.querySelector('.btn-dark-toggle');
+    const icon = darkToggleBtn.querySelector('i');
+
+    // Apply saved theme on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+    });
+
+    // Toggle dark mode and save preference in localStorage
     function toggleDarkMode() {
       document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+
+      icon.classList.toggle("fa-sun", isDark);
+      icon.classList.toggle("fa-moon", !isDark);
     }
   </script>
 </body>

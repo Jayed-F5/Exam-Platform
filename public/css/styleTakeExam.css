@@ -1,0 +1,163 @@
+:root {
+  --primary-color: #1a73e8;
+  --accent-color: #ff9900;
+
+  /* Light Mode Defaults */
+  --bg-color: #f4f4f4;
+  --text-color: #1c1c1c;
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --bg-color: #121212;
+  --text-color: #f0f0f0;
+  --card-bg: #1e1e1e;
+  --input-bg: #2a2a2a;
+  --shadow: 0 4px 16px rgba(255, 255, 255, 0.05);
+}
+
+/* === GLOBAL === */
+body.take-exam-page {
+  background: url('/backgroundimg.png') center/cover no-repeat fixed;
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* === CONTAINER === */
+.exam-container {
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 720px;
+  transition: background-color 0.3s ease;
+}
+
+/* === TITLE === */
+#examTitle {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+/* === QUESTIONS === */
+.question-block {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.question-block p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.question-block label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* === MEDIA === */
+.question-block img,
+.question-block video {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  display: block;
+  margin: 15px auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.question-block audio {
+  display: block;
+  margin: 10px auto;
+}
+
+/* === INPUT === */
+input[type="text"] {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+}
+
+.dark input[type="text"] {
+  border: 1px solid #555;
+}
+
+/* === TIMER === */
+#timer {
+  margin-top: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+/* === BUTTON === */
+.submit-button {
+  margin-top: 1.5rem;
+  background-color: var(--accent-color);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  color: #1a1a1a;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #e88f00;
+}
+
+/* === RESULT MESSAGE === */
+.result-message {
+  margin-top: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.result-message.success {
+  background-color: #e7f9ec;
+  color: #2e8b57;
+  border: 1px solid #b2dfbb;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.result-message.fail {
+  background-color: #ffecec;
+  color: #cc0000;
+  border: 1px solid #ff9999;
+  padding: 1rem;
+  border-radius: 10px;
+}
+html.dark body.take-exam-page {
+  background: url('../backgdark.png') center/cover no-repeat fixed;
+}
