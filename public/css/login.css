@@ -1,80 +1,76 @@
+.login-container {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
 
-    /* Additional login-specific styles */
-    .login-container {
-      max-width: 400px;
-      margin: 4rem auto;
-      padding: 2rem;
-      background-color: var(--card-bg);
-      border-radius: 10px;
-      box-shadow: var(--shadow);
-    }
+.login-container h1 {
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
 
-    .login-container h1 {
-      text-align: center;
-      color: var(--primary-color);
-      margin-bottom: 1.5rem;
-    }
+.login-form .form-group {
+  margin-bottom: 1rem;
+}
 
-    .login-form .form-group {
-      margin-bottom: 1rem;
-    }
+.login-form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
 
-    .login-form label {
-      display: block;
-      margin-bottom: 0.4rem;
-      font-weight: 600;
-    }
+.login-form input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
 
-    .login-form input {
-      width: 100%;
-      padding: 0.6rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
+.btn-login-submit {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: var(--accent-color);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+}
 
-    .btn-login-submit {
-      width: 100%;
-      padding: 0.7rem;
-      background-color: var(--accent-color);
-      color: #1a1a1a;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
+.btn-login-submit:hover {
+  background-color: #ffa500d0;
+}
 
-    .btn-login-submit:hover {
-      background-color: #ffa500d0;
-    }
+.signup-link {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
 
-    .signup-link {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.95rem;
-    }
+.signup-link a {
+  color: var(--primary-color);
+  font-weight: 600;
+}
 
-    .signup-link a {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
+#message-box {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 600;
+}
 
-    #message-box {
-      margin-top: 1rem;
-      text-align: center;
-      font-weight: 600;
-    }
+body.dark .login-container {
+  background-color: var(--dark-card-bg);
+  color: var(--dark-text);
+}
 
-    /* Dark mode overrides */
-    body.dark .login-container {
-      background-color: var(--dark-card-bg);
-      color: var(--dark-text);
-    }
-
-    body.dark .login-form input {
-      background-color: #2a2a3f;
-      border: 1px solid #444;
-      color: var(--dark-text);
-    }
-  
+body.dark .login-form input {
+  background-color: #2a2a3f;
+  border: 1px solid #444;
+  color: var(--dark-text);
+}
