@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
-    // Apply saved theme before rendering the page
     (function() {
       if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.classList.add('dark');
@@ -25,7 +24,6 @@
   </div>
 
   <script>
-    // Extract URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const examLink = urlParams.get('examCode');
     const examTitle = document.getElementById('examTitle');
@@ -41,7 +39,6 @@
     let currentQuestion = null;
     let userLocation = null;
 
-    // Request user's geolocation
     async function askGeolocation() {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
@@ -65,7 +62,6 @@
       });
     }
 
-    // Load exam data from the server
     async function loadExam() {
       try {
         const res = await fetch(`/api/exams/by-code/${examLink}`);
@@ -85,7 +81,6 @@
       }
     }
 
-    // Display the current question
     function showQuestion() {
       if (currentIndex >= examData.questions.length) {
         submitExam();
@@ -152,7 +147,6 @@
       startTimer(q.duration || 30);
     }
 
-    // Start the timer for the current question
     function startTimer(seconds) {
       let remaining = seconds;
       timerEl.textContent = `Time remaining: ${remaining} seconds`;
@@ -166,13 +160,11 @@
       }, 1000);
     }
 
-    // Handle the submit button click
     submitBtn.addEventListener('click', () => {
       clearInterval(currentTimer);
       submitCurrentAnswer();
     });
 
-    // Submit the current answer and move to the next question
     function submitCurrentAnswer() {
       const inputs = document.querySelectorAll(`input[name="q${currentQuestion.id}"]`);
       const collected = [];
@@ -188,7 +180,6 @@
       showQuestion();
     }
 
-    // Submit the entire exam
     async function submitExam() {
       questionArea.innerHTML = '';
       timerEl.innerHTML = '';
@@ -219,7 +210,6 @@
       }
     }
 
-    // Initialize the exam process
     askGeolocation()
       .then(() => loadExam())
       .catch(() => {
