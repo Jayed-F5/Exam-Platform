@@ -2,7 +2,6 @@
   --primary-color: #1a73e8;
   --accent-color: #ff9900;
 
-  /* Light Mode Defaults */
   --bg-color: #f4f4f4;
   --text-color: #1c1c1c;
   --card-bg: #ffffff;
@@ -18,7 +17,6 @@
   --shadow: 0 4px 16px rgba(255, 255, 255, 0.05);
 }
 
-/* === GLOBAL === */
 body.take-exam-page {
   background: url('/backgroundimg.png') center/cover no-repeat fixed;
   margin: 0;
@@ -33,7 +31,6 @@ body.take-exam-page {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* === CONTAINER === */
 .exam-container {
   background-color: var(--card-bg);
   box-shadow: var(--shadow);
@@ -44,7 +41,6 @@ body.take-exam-page {
   transition: background-color 0.3s ease;
 }
 
-/* === TITLE === */
 #examTitle {
   font-size: 1.8rem;
   font-weight: bold;
@@ -53,7 +49,7 @@ body.take-exam-page {
   text-align: center;
 }
 
-/* === QUESTIONS === */
+
 .question-block {
   padding: 20px;
   border-radius: 10px;
@@ -75,7 +71,7 @@ body.take-exam-page {
   cursor: pointer;
 }
 
-/* === MEDIA === */
+
 .question-block img,
 .question-block video {
   max-width: 100%;
@@ -92,7 +88,7 @@ body.take-exam-page {
   margin: 10px auto;
 }
 
-/* === INPUT === */
+
 input[type="text"] {
   width: 100%;
   padding: 0.6rem;
@@ -109,7 +105,6 @@ input[type="text"] {
   border: 1px solid #555;
 }
 
-/* === TIMER === */
 #timer {
   margin-top: 1rem;
   font-size: 1rem;
@@ -117,7 +112,6 @@ input[type="text"] {
   color: var(--text-color);
 }
 
-/* === BUTTON === */
 .submit-button {
   margin-top: 1.5rem;
   background-color: var(--accent-color);
@@ -135,7 +129,6 @@ input[type="text"] {
   background-color: #e88f00;
 }
 
-/* === RESULT MESSAGE === */
 .result-message {
   margin-top: 1.5rem;
   font-size: 1.3rem;
