@@ -1,13 +1,11 @@
 
 const db = require('./db');
 
-// Function to retrieve a user by their email
 const getUserByEmail = async (email) => {
     const [rows] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
     return rows[0];
 };
 
-// Function to create a new user in the database
 const createUser = async (userData) => {
     const {
         email, password, firstname, lastname,
@@ -24,7 +22,6 @@ const createUser = async (userData) => {
     ]);
 };
 
-// Exporting the functions for use in other parts of the application
 module.exports = {
     getUserByEmail,
     createUser
