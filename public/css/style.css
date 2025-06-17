@@ -1,4 +1,3 @@
-/* === Root Variables === */
 :root {
     --primary-color: #0066cc;
     --accent-color: #ff9900;
@@ -18,9 +17,7 @@
     margin: 0;
     transition: background-color 0.3s, color 0.3s;
   }
-  
-  /* === Header === */
-  .header {
+    .header {
     background-color: var(--light-bg);
     box-shadow: var(--shadow);
     padding: 0 2rem;
@@ -60,7 +57,6 @@
     color: var(--dark-bg);
   }
   
-  /* === Hero === */
   .hero {
     background: url('/backgroundimg.png') center/cover no-repeat;
     padding: 5rem 2rem;
@@ -93,7 +89,6 @@
     transform: scale(1.05);
   }
   
-  /* === Sections Shared === */
   .section-bg {
     padding: 4rem 2rem;
   }
@@ -108,7 +103,6 @@
     margin-bottom: 2rem;
   }
   
-  /* === Features === */
   .features-grid {
     display: flex;
     justify-content: center;
@@ -136,7 +130,6 @@
     margin-bottom: 1rem;
   }
   
-  /* === How It Works === */
   .steps {
     display: flex;
     justify-content: center;
@@ -176,7 +169,6 @@
     margin: 0;
   }
   
-  /* === Dark Mode === */
   body.dark {
     background: url('/backgdark.png') center/cover no-repeat;
     color: var(--dark-text);
@@ -205,7 +197,6 @@
     color: var(--dark-bg);
   }
   
-  /* === Responsive === */
   @media (max-width: 768px) {
     .features-grid,
     .steps {
