@@ -2,11 +2,7 @@ const crypto = require('crypto');
 const Exam = require('../models/Exam');
 const db = require('../models/db');
 
-// ==============================
-// Exam Management
-// ==============================
 
-// Create an exam
 exports.createExam = (req, res) => {
     console.log("👉 Reçu dans createExam:", req.body);
   
@@ -33,7 +29,6 @@ exports.createExam = (req, res) => {
   };
   
 
-// Generate a unique link for an exam
 exports.generateLink = async (req, res) => {
   const { examId } = req.body;
   if (!req.session?.user?.id) return res.status(401).json({ success: false });
@@ -48,7 +43,6 @@ exports.generateLink = async (req, res) => {
   }
 };
 
-// Get exams created by the logged-in user
 exports.getMyExams = (req, res) => {
     if (!req.session?.user?.id) return res.status(401).json({ success: false });
   
@@ -67,7 +61,6 @@ exports.getMyExams = (req, res) => {
   };
   
 
-// Get exam details by code
 exports.getExamByCode = async (req, res) => {
   const { code } = req.params;
 
@@ -110,7 +103,6 @@ exports.getExamByCode = async (req, res) => {
   }
 };
 
-// Get exam details by ID
 exports.getExamById = async (req, res) => {
   const { examId } = req.body;
 
@@ -146,7 +138,6 @@ exports.getExamById = async (req, res) => {
   }
 };
 
-// Update an exam
 exports.updateExam = (req, res) => {
   const examId = req.params.examId;
   const { title, description, target_group } = req.body;
@@ -175,7 +166,6 @@ exports.updateExam = (req, res) => {
   });
 };
 
-// Delete an exam
 exports.deleteExam = async (req, res) => {
   const { examId } = req.params;
   console.log("🧪 Deleting exam ID:", examId);
@@ -193,11 +183,6 @@ exports.deleteExam = async (req, res) => {
   }
 };
 
-// ==============================
-// Question Management
-// ==============================
-
-// Add a question with its options (QCM)
 exports.addQuestion = async (req, res) => {
   const { exam_id, type, statement, answer, tolerance, correctOption, points, duration } = req.body;
   const mediaPath = req.file ? `/uploads/${req.file.filename}` : null;
@@ -230,7 +215,6 @@ exports.addQuestion = async (req, res) => {
   }
 };
 
-// Update a question
 exports.updateQuestion = (req, res) => {
   const questionId = req.params.id;
   const { statement, answer, tolerance, points, duration } = req.body;
@@ -259,7 +243,6 @@ exports.updateQuestion = (req, res) => {
   });
 };
 
-// Delete a question
 exports.deleteQuestion = async (req, res) => {
   const questionId = req.params.id;
 
@@ -272,11 +255,7 @@ exports.deleteQuestion = async (req, res) => {
   }
 };
 
-// ==============================
-// Exam Submission
-// ==============================
 
-// Submit an exam
 exports.submitExam = async (req, res) => {
   const { link, answers, location } = req.body;
 
@@ -344,11 +323,6 @@ exports.submitExam = async (req, res) => {
   }
 };
 
-// ==============================
-// Helper Functions
-// ==============================
-
-// Levenshtein distance calculation
 function levenshtein(a, b) {
   const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
   for (let i = 0; i <= a.length; i++) dp[i][0] = i;
