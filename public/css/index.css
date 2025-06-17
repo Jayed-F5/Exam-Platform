@@ -358,7 +358,6 @@ body {
     color: var(--light-text);
   }
   
-  /* How it works card light mode */
   body:not(.dark) .step {
     background-color: #ffffff;
     color: var(--light-text);
