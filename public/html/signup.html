@@ -86,7 +86,6 @@
     const messageBox = document.getElementById('message-box');
     const params = new URLSearchParams(window.location.search);
 
-    // Display error or success messages based on URL parameters
     if (params.has('error')) {
       messageBox.textContent = decodeURIComponent(params.get('error'));
       messageBox.style.color = 'red';
@@ -98,7 +97,6 @@
     const darkToggleBtn = document.querySelector('.btn-dark-toggle');
     const icon = darkToggleBtn.querySelector('i');
 
-    // Load saved theme from localStorage on page load
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark') {
@@ -108,7 +106,6 @@
       }
     });
 
-    // Toggle dark mode and save the preference in localStorage
     function toggleDarkMode() {
       document.body.classList.toggle('dark');
       const isDark = document.body.classList.contains('dark');
