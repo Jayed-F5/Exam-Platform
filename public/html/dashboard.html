@@ -28,7 +28,6 @@
     <h1 class="welcome-text">Welcome back, <span id="userName" class="username"></span> 👋</h1>
 
     <div class="dashboard-split">
-      <!-- Create Exam -->
       <section class="dashboard-panel">
         <h2>Create an Exam</h2>
         <p>You can create a new exam and configure its settings.</p>
@@ -37,7 +36,6 @@
         </button>
       </section>
 
-      <!-- Take Exam -->
       <section class="dashboard-panel">
         <h2>Take an Exam</h2>
         <p>Enter your exam link below to begin:</p>
@@ -52,7 +50,6 @@
   </main>
 
   <script>
-    // Fetch user name
     fetch('/api/user')
       .then(res => res.json())
       .then(data => {
@@ -60,16 +57,13 @@
       })
       .catch(() => window.location.href = '/login.html');
   
-    // Logout button
     document.getElementById('logout-btn').addEventListener('click', () => {
       window.location.href = '/logout';
     });
   
-    // DARK MODE
     const darkBtn = document.getElementById('toggle-dark');
     const darkIcon = darkBtn.querySelector('i');
   
-    // Apply saved theme
     window.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('theme');
       if (saved === 'dark') {
@@ -79,7 +73,6 @@
       }
     });
   
-    // Toggle + save theme
     darkBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark');
       const isDark = document.body.classList.contains('dark');
