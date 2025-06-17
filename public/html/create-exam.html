@@ -44,7 +44,6 @@
       const toggleBtn = document.getElementById('theme-toggle');
       const icon = toggleBtn.querySelector('i');
 
-      // Load saved theme from localStorage
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark') {
         document.body.classList.add('dark');
@@ -52,37 +51,30 @@
         icon.classList.add('fa-sun');
       }
 
-      // Toggle theme and save new preference to localStorage
       toggleBtn.addEventListener('click', () => {
         document.body.classList.toggle('dark');
         const isDark = document.body.classList.contains('dark');
 
-        // Update the icon based on the theme
         icon.classList.toggle('fa-moon', !isDark);
         icon.classList.toggle('fa-sun', isDark);
 
-        // Save the theme preference
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
       });
     });
 
-    // Handle form submission for creating an exam
     document.getElementById('examForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      // Get form input values
       const title = document.getElementById('title').value.trim();
       const description = document.getElementById('description').value.trim();
       const target_group = document.getElementById('target_group').value.trim();
 
-      // Validate form inputs
       if (!title || !description || !target_group) {
         alert("Please fill out all fields.");
         return;
       }
 
       try {
-        // Send form data to the server
         const res = await fetch('/api/exams/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -91,17 +83,14 @@
 
         const result = await res.json();
 
-        // Handle server response
         if (result.success) {
           const examId = result.examId;
 
-          // Redirect to add questions page with the exam ID
           window.location.href = `add-questions.html?examId=${examId}`;
         } else {
           alert("Error creating the exam.");
         }
       } catch (err) {
-        // Handle network or server errors
         console.error("Network error:", err);
         alert("An error occurred.");
       }
