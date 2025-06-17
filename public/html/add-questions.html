@@ -88,34 +88,28 @@
   </div>
 
   <script>
-    // Extract examId from URL and set it in the hidden input field
     const urlParams = new URLSearchParams(window.location.search);
     const examId = urlParams.get('examId');
     document.getElementById('examId').value = examId;
 
-    // DOM elements and variables
     const qcmContainer = document.getElementById('qcmOptionsContainer');
     const questionTypeSelect = document.getElementById('questionTypeSelect');
     const answerInput = document.getElementById('answer');
     const toleranceInput = document.getElementById('tolerance');
     let questionCount = 0;
 
-    // Function to add a QCM option
     function addQcmOption(required = false) {
       const index = qcmContainer.querySelectorAll('.qcm-option').length + 1;
 
-      // Create option wrapper
       const wrapper = document.createElement('div');
       wrapper.className = 'qcm-option';
 
-      // Create input field for the option
       const input = document.createElement('input');
       input.type = 'text';
       input.name = `option${index}`;
       input.placeholder = `Option ${index}`;
       input.required = required;
 
-      // Create delete button for the option
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.innerHTML = `
@@ -129,7 +123,6 @@
         setTimeout(() => wrapper.remove(), 300);
       };
 
-      // Create checkbox for marking the option as correct
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.name = 'correct[]';
@@ -139,7 +132,6 @@
       label.textContent = ' Correct';
       label.prepend(checkbox);
 
-      // Append elements to the wrapper
       const inputWrapper = document.createElement('div');
       inputWrapper.className = 'input-with-icon';
       inputWrapper.appendChild(input);
@@ -151,7 +143,6 @@
       qcmContainer.appendChild(wrapper);
     }
 
-    // Event listener for question type selection
     questionTypeSelect.addEventListener('change', function () {
       const selected = this.value;
       document.getElementById('qcmFields').style.display = selected === 'qcm' ? 'block' : 'none';
@@ -159,7 +150,7 @@
 
       if (selected === 'qcm') {
         qcmContainer.innerHTML = '';
-        addQcmOption(true); // Add two required options by default
+        addQcmOption(true); 
         addQcmOption(true);
       }
 
@@ -167,10 +158,8 @@
       toleranceInput.required = selected === 'direct';
     });
 
-    // Add QCM option button event listener
     document.getElementById('addOptionBtn').addEventListener('click', () => addQcmOption(false));
 
-    // Form submission handler
     const form = document.getElementById('questionForm');
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -180,7 +169,6 @@
 
       const formData = new FormData(this);
 
-      // Handle QCM-specific data
       if (selectedType === 'qcm') {
         const correctValues = [...form.querySelectorAll('input[name="correct[]"]:checked')].map(cb => cb.value);
         if (correctValues.length === 0) {
@@ -190,7 +178,6 @@
         formData.append('correctOption', correctValues.join(','));
       }
 
-      // Submit the form data to the server
       try {
         const res = await fetch('/api/questions/add', {
           method: 'POST',
@@ -199,13 +186,11 @@
 
         const result = await res.json();
         if (result.success) {
-          // Show success message
           document.getElementById('successMessage').style.display = 'block';
           setTimeout(() => {
             document.getElementById('successMessage').style.display = 'none';
           }, 4000);
 
-          // Reset form and fields
           form.reset();
           qcmContainer.innerHTML = '';
           document.getElementById('qcmFields').style.display = 'none';
@@ -218,7 +203,6 @@
       }
     });
 
-    // Finish exam button event listener
     document.getElementById('finishExam').addEventListener('click', async function () {
       if (questionCount === 0) {
         const linkDiv = document.getElementById('generatedLink');
@@ -226,7 +210,6 @@
         return;
       }
 
-      // Generate exam link
       const res = await fetch('/api/exams/generate-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -248,7 +231,6 @@
           </div>
         `;
 
-        // Copy code to clipboard
         document.getElementById('copyCodeBtn').addEventListener('click', () => {
           navigator.clipboard.writeText(code).then(() => {
             const feedback = document.getElementById('copyFeedback');
@@ -259,12 +241,10 @@
       }
     });
 
-    // Theme toggle functionality
     document.addEventListener('DOMContentLoaded', () => {
       const toggleBtn = document.getElementById("theme-toggle");
       const icon = document.getElementById("theme-icon");
 
-      // Load saved theme from localStorage
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "dark") {
         document.body.classList.add("dark");
@@ -272,7 +252,6 @@
         icon.classList.add("fa-sun");
       }
 
-      // Toggle theme on button click
       toggleBtn.addEventListener("click", () => {
         document.body.classList.toggle("dark");
         const isDark = document.body.classList.contains("dark");
