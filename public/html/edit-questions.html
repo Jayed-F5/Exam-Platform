@@ -32,11 +32,9 @@
   </div>
 
   <script>
-    // Get the examId from the URL query parameters
     const examId = new URLSearchParams(window.location.search).get('examId');
     const questionsContainer = document.getElementById('questionsContainer');
 
-    // Load exam details and questions
     async function loadExam() {
       const res = await fetch('/api/exams/get', {
         method: 'POST',
@@ -52,16 +50,13 @@
         return;
       }
 
-      // Populate exam information fields
       document.getElementById('examTitle').value = data.exam.title || '';
       document.getElementById('examDescription').value = data.exam.description || '';
       document.getElementById('examTarget').value = data.exam.target_group || '';
 
-      // Render each question
       data.exam.questions.forEach(renderQuestion);
     }
 
-    // Render a single question block
     function renderQuestion(q) {
       const div = document.createElement('div');
       div.className = 'question-block';
@@ -110,7 +105,6 @@
       questionsContainer.appendChild(div);
     }
 
-    // Add event listeners for form actions
     function addFormListeners() {
       questionsContainer.addEventListener('click', async e => {
         const form = e.target.closest('form');
@@ -172,7 +166,6 @@
       });
     }
 
-    // Confirm deletion of a question
     function confirmDelete(form) {
       if (form.querySelector('.confirm-delete')) return;
       const id = form.dataset.id;
@@ -185,7 +178,6 @@
       form.appendChild(confirmDiv);
     }
 
-    // Delete a question
     async function deleteQuestion(id, btn) {
       const form = btn.closest('form');
       const res = await fetch(`/api/questions/${id}`, { method: 'DELETE' });
@@ -198,7 +190,6 @@
       }
     }
 
-    // Show feedback message
     function showMessage(form, msg, success = true) {
       const box = form.querySelector('.feedback-message');
       box.textContent = msg;
@@ -210,7 +201,6 @@
       }, 5000);
     }
 
-    // Update exam information
     document.getElementById('examInfoForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('examTitle').value;
@@ -237,21 +227,17 @@
       }, 4000);
     });
 
-    // Redirect to add new question page
     document.getElementById('addNewQuestion').addEventListener('click', () => {
       window.location.href = `/add-questions.html?examId=${examId}`;
     });
 
-    // Load exam data and add event listeners
     loadExam();
     addFormListeners();
 
-    // Theme toggle functionality
     document.addEventListener('DOMContentLoaded', () => {
       const toggleBtn = document.getElementById('theme-toggle');
       const icon = document.getElementById('theme-icon');
 
-      // Load saved theme
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark') {
         document.body.classList.add('dark');
@@ -259,7 +245,6 @@
         icon.classList.add('fa-sun');
       }
 
-      // Toggle and save theme preference
       toggleBtn.addEventListener('click', () => {
         document.body.classList.toggle('dark');
         const isDark = document.body.classList.contains('dark');
