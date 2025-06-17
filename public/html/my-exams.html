@@ -72,7 +72,6 @@
     }
 
     function showDeleteConfirm(id, btn) {
-  // ✅ Remove any previous confirm box
   document.querySelectorAll('.confirm-delete').forEach(el => el.remove());
 
   const confirmBox = document.createElement('div');
@@ -82,7 +81,6 @@
     <button onclick="confirmDelete(${id}, this)" style="background: #dc3545; color: white; padding: 0.4rem 0.8rem; border: none; border-radius: 6px; cursor: pointer;">✅ Confirmer</button>
   `;
 
-  // Append below the whole exam card to avoid layout shifts
   btn.closest('.exam-item').appendChild(confirmBox);
   setTimeout(() => {
   if (confirmBox.parentElement) confirmBox.remove();
@@ -129,7 +127,6 @@ function copyExamLink(link, btn) {
       window.location.href = '/logout';
     });
 
-    // Apply saved theme on page load
 window.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme');
   const icon = document.querySelector('#darkModeToggle i');
@@ -140,7 +137,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Toggle and save preference
 document.getElementById('darkModeToggle').addEventListener('click', () => {
   const isDark = document.body.classList.toggle('dark');
   const icon = document.querySelector('#darkModeToggle i');
